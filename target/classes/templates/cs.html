@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/element-ui.css}">
+</head>
+<body >
+<div class="alert alert-danger" role="alert" id="app">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error:</span>
+    Enter a valid email address
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+
+<script>
+    var app = new Vue({
+        el:"#app",
+        methods: {
+            open3() {
+                this.$notify({
+                    title: '成功',
+                    message: '这是一条成功的提示消息',
+                    type: 'success'
+                });
+            }
+
+        }
+    })
+
+
+</script>
+</html>

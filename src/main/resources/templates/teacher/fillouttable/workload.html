@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr {
+            height: 40px;
+        }
+
+        table tr td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header text-center">
+                            <h4>
+                                湖南工业职业技术学院专业技术人员工作量申报/审核表
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered" style="table-layout:fixed; overflow:hidden;" border="1"
+                                   width="80%"
+                                   bgcolor="#fff" cellspacing="0" align="center">
+                                <div align="center" style="margin-bottom: 15px;">
+                                    <text><u th:text="${session.teacherInfo.instituteName}"></u>&emsp;&emsp;&emsp;&emsp;</text>
+                                    <text><u th:text="${session.teacherInfo.sectionName}"></u></text>
+                                </div>
+
+                                <!--姓名 性别 年龄 职称 职务-->
+                                <tr align="center">
+                                    <td>姓名</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.name}"></td>
+                                    <td>性别</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.gender}"></td>
+                                    <td>年龄</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.gender}"></td>
+                                    <td>职称</td>
+                                    <td colspan="4" th:text="${session.teacherInfo.technicalposition}"></td>
+                                    <td>职务</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.administrativeduty}"></td>
+                                </tr>
+
+                                <!--工作量计算-->
+                                <tr>
+                                    <td colspan="21" style="letter-spacing: 20px;font-weight:bold" align="center">
+                                        工作量计算（标准课时）
+                                    </td>
+                                </tr>
+
+                                <!--教学工作量-->
+                                <!--理论授课   指导实践课-->
+                                <tr align="center">
+                                    <td rowspan="6" class="cell">教<br>学<br>工<br>作<br>量</td>
+                                    <td colspan="13">理论授课</td>
+                                    <td colspan="7">指导实践课</td>
+                                </tr>
+                                <!--班级  课程名称  计划课时数  合班课  课外实验  合计  课程设计与大型作业  校内实习实训  校外实习实训  毕业实践  合计 -->
+                                <tr align="center">
+                                    <td colspan="3">班级</td>
+                                    <td colspan="3">课程名称</td>
+                                    <td colspan="2">计划课时数</td>
+                                    <td colspan="2">合班课</td>
+                                    <td>课外实验</td>
+                                    <td colspan="2">合计</td>
+                                    <td colspan="2">课程设计与大型作业</td>
+                                    <td>校内实习实训</td>
+                                    <td>校外实习实训</td>
+                                    <td colspan="2">毕业实践</td>
+                                    <td>合计</td>
+                                </tr>
+                                <tr align="center">
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td>12</td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td>12</td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td>12</td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td>12</td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td>12</td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+
+                                <!--教研科研工作量-->
+                                <!--序号  项目名称  项目摘要  项目完成情况  折算标准工作量  项目负责人  合计-->
+                                <tr align="center">
+                                    <td rowspan="7">教<br>研<br>科<br>研<br>工<br>作<br>量</td>
+                                    <td>序号</td>
+                                    <td colspan="5">项目名称</td>
+                                    <td colspan="4">项目摘要</td>
+                                    <td colspan="3">项目完成情况</td>
+                                    <td colspan="3">折算标准工作量</td>
+                                    <td colspan="3">项目负责人</td>
+                                    <td>合计</td>
+                                </tr>
+                                <tr align="center">
+                                    <td>1</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td>2</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td>3</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td>4</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td>5</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+                                <tr align="center">
+                                    <td>6</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+
+                                <!--补助工作量-->
+                                <tr align="center">
+                                    <td colspan="2" style="font-weight: bold">补助工作量</td>
+                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td></td>
+                                </tr>
+
+                                <!--共计工作量-->
+                                <tr>
+                                    <td colspan="21" style="letter-spacing: 20px;font-weight:bold" align="center">
+                                        共计工作量
+                                    </td>
+                                </tr>
+
+                                <!--教研室审核  系部审核-->
+                                <tr align="center">
+                                    <td colspan="2">教研室审核</td>
+                                    <td colspan="9"></td>
+                                    <td colspan="2">系部审核</td>
+                                    <td colspan="8"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="21">
+                                        <button type="button" class="btn btn-primary" id="sub">提交</button>
+                                    </td>
+                                </tr>
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>毕业设计选题系统</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+
+
+</head>
+<body>
+<div class="wrapper" >
+    <div class="main-header" th:fragment="header">
+        <div class="logo-header">
+            <a href="index" th:if="${path} eq null">返回首页</a>
+            <span th:unless="${path} eq null">首页</span>
+            <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse"
+                    aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation" style="border: none;background-color: #fff">
+                <span class="glyphicon glyphicon-option-vertical"></span>
+            </button>
+        </div>
+        <nav class="navbar navbar-header navbar-expand-lg" style="margin-bottom: 0px">
+            <div class="container-fluid">
+                <font size="3px;" style="display:flex;margin-top: 15px;">您选择的毕业设计课题：
+                    <span style="color: red" th:if="${session.XZproject} eq null">未选题</span>
+                    <span style="color: red" th:if="${session.XZproject} ne null"><span th:text="${session.XZproject}"></span></span>
+                </font>
+
+            </div>
+        </nav>
+    </div>
+    <div class="sidebar" th:fragment="left">
+        <div class="scrollbar-inner sidebar-wrapper">
+            <div class="user">
+                <div class="photo">
+                    <img th:src="@{/asserts/img/profile2.jpg}">
+                </div>
+                <div class="info">
+                    <a class="" data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+								<span>
+									学生
+									<span class="user-level" th:text="${session.student.name}"></span>
+									<span class="caret"></span>
+								</span>
+                    </a>
+                    <div class="clearfix"></div>
+
+                    <div class="collapse" id="collapseExample" aria-expanded="true" style="">
+                        <ul class="nav">
+                            <li>
+                                <a th:href="@{/student/studentinfo}">
+                                    <span class="link-collapse">个人信息</span>
+                                </a>
+                            </li>
+                            <!--<li>-->
+                                <!--<a href="modifyinfo">-->
+                                    <!--<span class="link-collapse">修改信息</span>-->
+                                <!--</a>-->
+                            <!--</li>-->
+                            <li>
+                                <a th:href="@{/student/changepsw}">
+                                    <span class="link-collapse">修改密码</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/student/exit}">
+                                    <span class="link-collapse">退出</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a href="topics">
+                        <i class="la la-keyboard-o"></i>
+                        <p>查看课题</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="classinfo">
+                        <i class="la la-search"></i>
+                        <p>查看本班选题情况</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+</html>

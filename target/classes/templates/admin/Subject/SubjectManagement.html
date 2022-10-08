@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+<!--    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">-->
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+<!--     引入组件库-->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}"/>
+
+    <title>教务综合管理系统</title>
+    <style>
+
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .el-select .el-input {
+
+        }
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .myfrom  .mychild{
+            margin: 5px ;
+        }
+
+        input[type=file]{
+            display: none;
+        }
+
+        .myBut{
+            margin-top: 2px;
+        }
+
+        .MyGrid{
+            display: grid;
+            grid-template-columns: repeat(3, 33.3%);
+        }
+
+
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="wrapper" id="app" v-cloak>
+
+    <el-dialog :title="'选该课题的学生——被老师选取：'+count" :visible.sync="showSubject">
+        <el-table :data="students">
+            <el-table-column property="id" label="序号"></el-table-column>
+            <el-table-column property="name" label="姓名"></el-table-column>
+            <el-table-column property="idClass" label="班级">
+                <template slot-scope="scope">
+                    {{ classes.get(scope.row.idClass) }}
+<!--                    {{ viewSCope(scope) }}-->
+                </template>
+            </el-table-column>
+            <el-table-column property="stunum" label="学号"></el-table-column>
+            <el-table-column label="是否被选取">
+                <template slot-scope="scope">
+                   {{ showStatuse(scope.$index) }}
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-dialog>
+
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="admin/public-admin-index :: header"></div>
+
+    <el-container style="height: 100%; border: 1px solid #eee">
+        <div th:replace="admin/public-admin-index :: left"></div>
+
+
+        <el-container>
+            <el-main>
+                <el-card class="box-card">
+
+                    <div class="card-header">
+
+                        <div class="MyGrid">
+                            <div>
+                                <el-select v-model="select" slot="prepend" placeholder="请选择教研室" style="width: 100%">
+                                    <el-option v-for="(section,index) in sections" :key="index" :label="section.sectionName" :value="section.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div>
+                                <el-input placeholder="请输入课题名字or指导老师名字" v-model="input" style="width: 100%"></el-input>
+                            </div>
+                            <div>
+                                <el-button-group slot="append" style="width: 100%">
+                                    <el-button icon="el-icon-search" @click="page(1)"></el-button>
+                                    <el-button icon="el-icon-delete" @click="input=select=null"></el-button>
+                                </el-button-group>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h4 class="text-center">
+                            课题管理
+                            <button v-if="false" class="btn btn-warning pull-right btn-round" @click="drawer = true"> 添加课题 </button>
+                        </h4>
+
+
+                        <el-drawer
+                                class="myfrom"
+                                size="85%"
+                                title="添加课题"
+                                :visible.sync="drawer"
+                                direction="btt">
+
+                            <el-row class="tac">
+                                <el-col :span="24">
+                                    <el-card style="margin: 0 0 15px 5px ; display: inline-block">
+                                        <templeate >
+                                            <el-select class="mychild" v-model="subject.idProjecttype" slot="prepend" placeholder="请选择课题类型">
+                                                <el-option v-for="(type,index) in sujecttypes" :key="index" :label="type.typename" :value="type.id"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.idProjectsource" slot="prepend" placeholder="请选择课题来源">
+                                                <el-option v-for="(source,index) in sources" :key="index" :label="source.sourcename" :value="source.id"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.marchspecialty" slot="prepend" placeholder="适用专业">
+                                                <el-option v-for="(specialty,index) in specialtys" :key="index" :label="specialty.specialtyName" :value="specialty.specialtyName"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.selectFlag" slot="prepend" placeholder="可选状态">
+                                                <el-option v-for="(Flag,index) in selectFlag" :key="index" :label="Flag" :value="index"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.verifyprojectFlag" slot="prepend" placeholder="课题状态">
+                                                <el-option v-for="(projectFlag,index) in verifyprojectFlag" :key="index" :label="projectFlag" :value="index"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.releaseFlag" slot="prepend" placeholder="发布状态">
+                                                <el-option v-for="(release,index) in releaseFlag" :key="index" :label="release" :value="index"></el-option>
+                                            </el-select>
+                                            <el-select class="mychild" v-model="subject.idTeacher" slot="prepend" placeholder="请选择发布教师名字">
+                                                <el-option v-for="(teacher,index) in teachers" :key="index" :label="teacher.name" :value="teacher.id"></el-option>
+                                            </el-select>
+                                        </templeate>
+                                        <el-input class="mychild" placeholder="请输入课题名" v-model="subject.projectname"></el-input>
+                                        <el-input class="mychild" placeholder="请输入指导老师（李一&张三）" v-model="subject.teachernames"></el-input>
+                                        <div class="mychild">
+                                            <el-button  type="primary" @click="add" style="margin: 0 auto ; width: 100px">立即创建</el-button>
+                                        </div>
+                                    </el-card>
+                                </el-col>
+
+                                <!--                                                    name="excel"-->
+                            </el-row>
+
+                        </el-drawer>
+
+                    </div>
+                    <div class="card-body">
+
+                        <template>
+                            <el-table
+                                    :data="subjects"
+                                    style="width: 100%">
+                                <el-table-column
+                                        label="课题名称"
+                                        width="300"
+                                        fixed
+                                        align="center">
+                                    <template slot-scope="scope" >
+                                        <el-input
+                                                type="textarea"
+
+                                                resize="none"
+                                                v-model="subjects[scope.$index].projectname"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="课题来源"
+                                        width="200"
+                                        align="center">
+                                    <template slot-scope="scope" style="width: 100%">
+                                        <el-select v-model="subjects[scope.$index].idProjectsource" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(source,index) in sources" :key="index"
+                                                       :label="source.sourcename"
+                                                       :value="source.id">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="课题类型"
+                                        width="200"
+                                        align="center">
+                                    <template slot-scope="scope" style="width: 100%">
+                                        <el-select v-model="subjects[scope.$index].idProjecttype" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(type,index) in sujecttypes" :key="index"
+                                                       :label="type.typename"
+                                                       :value="type.id">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="指导教师"
+                                        width="150"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input
+                                                v-model="subjects[scope.$index].teachernames"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="适用专业"
+                                        width="150"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select multiple v-model="subjects[scope.$index].marchspecialty" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(specialty,index) in specialtys" :key="index"
+                                                       :label="specialty.specialtyName"
+                                                       :value="specialty.specialtyName">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="selectcount"
+                                        label="选报人数"
+                                        width="100"
+                                        align="center">
+                                </el-table-column>
+                                <el-table-column
+                                        label="可选状态"
+                                        width="120"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select v-model="subjects[scope.$index].selectFlag" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(Flag,index) in selectFlag" :key="index"
+                                                       :label="Flag"
+                                                       :value="index">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="课题状态"
+                                        width="120"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select v-model="subjects[scope.$index].verifyprojectFlag" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(projectFlag,index) in verifyprojectFlag" :key="index"
+                                                       :label="projectFlag"
+                                                       :value="index">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="发布状态"
+                                        width="120"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select v-model="subjects[scope.$index].releaseFlag" slot="prepend" :disabled="scope.$index!=flag">
+                                            <el-option v-for="(release,index) in releaseFlag" :key="index"
+                                                       :label="release"
+                                                       :value="index">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        fixed="right"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-button class="myBut" size="small" type="danger" plain @click="del(scope.$index)">删除</el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" plain v-show="scope.$index!=flag" @click="update(scope.$index)">修改</el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" v-show="scope.$index==flag" @click="updateSave(scope.$index)">保存</el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="success" plain @click="look(scope.$index)">查看</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+
+                    <div class='card-footer'>
+                        <el-row>
+                            <el-col :span="4" :offset="6">
+                                <el-pagination
+                                        @current-change="page"
+                                        background
+                                        layout="prev, pager, next"
+                                        :total="total">
+                                </el-pagination>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                </el-card>
+            </el-main>
+        </el-container>
+    </el-container>
+
+</div>
+
+
+</body>
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.js}"></script>
+
+<script th:inline="javascript">
+
+    var basePath= /*[[${#httpServletRequest.getContextPath()}]]*/'ContextPath' ;
+
+    var app = new Vue({
+        el:"#app",
+        data(){
+            return {
+                url:basePath+"/admin/subject",
+                subjects:[] ,
+                sections:[],
+                sources:[],
+                sujecttypes:[],
+                specialtys:[],
+                teachers:[],
+                select:'',
+                input:'',
+                total:1,
+                offset:1,
+                currentPage:1,
+                //当前可以修改得表格下标
+                flag:-1,
+                drawer: false,
+                subject:{},
+                selectFlag:["开启","关闭"],
+                verifyprojectFlag:["未审核","审核未通过","审核通过"],
+                releaseFlag:["未发布","已发布"],
+                students:[],
+                showSubject:false,
+                statuse:new Map(), //学生课题选择状态
+                classes:[],
+                count:0,
+            }
+        },
+        methods:{
+            myMessage(data){
+                console.log(data);
+                if(data.data.code==100)
+                {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                }else {
+                    this.$notify({
+                        title: '错误',
+                        dangerouslyUseHTMLString: true,
+                        message: '操作错误：<br>'+data.data.msg,
+                        type:'error',
+                        position: 'top-right',
+                    });
+                }
+            },
+            page(currentPage){
+                this.currentPage = currentPage;
+                axios.get(this.url+"s",{
+                    params:{
+                        "offset":this.currentPage,
+                        "keyWord":this.input,
+                        "sectionId":this.select
+                    }
+                }
+                ).then((data)=>{
+                    this.subjects=data.data.extend.subjects;
+                    for(var i = 0 ; i < this.subjects.length; i++)
+                    {
+                        // this.subjects[i].marchspecialty = JSON.stringify(this.subjects[i].marchspecialty);
+                        this.subjects[i].marchspecialty = this.subjects[i].marchspecialty.split(",");
+                        console.log(this.subjects[i].marchspecialty);
+                    }
+
+                    this.total=data.data.extend.total;
+                    // this.input1='';
+                    // this.select='';
+                });
+            },
+            add() {
+                JSON.parse( JSON.stringify(this.subject.marchspecialty))+"";
+                axios.post(this.url,this.subject).then((data)=>{
+                    this.myMessage(data);
+                    this.page(1)
+                });
+            },
+            del(index){
+                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var a = this.subjects[index].marchspecialty;
+                    this.subjects[index].marchspecialty =JSON.parse( JSON.stringify(this.subjects[index].marchspecialty))+"";
+                    axios.delete(this.url,
+                        {data:this.subjects[index]}
+                        ).then((data)=>{
+                            console.log("data::",data);
+                        this.myMessage(data);
+                        this.page(1);
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
+            update(index){
+                this.flag = index;
+            },
+            updateSave(index){
+                this.flag = -1;
+                var a = this.subjects[index].marchspecialty;
+                this.subjects[index].marchspecialty =JSON.parse( JSON.stringify(this.subjects[index].marchspecialty))+"";
+                axios.put(this.url,this.subjects[index]).then((data)=>{
+                    this.myMessage(data);
+                    this.subjects[index].marchspecialty = a;
+                });
+
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
+            uploadSuccess(response, file, fileList)
+            {
+                if(response.code==100)
+                {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+
+                }else {
+                    this.$notify({
+                        title: '警告',
+                        dangerouslyUseHTMLString: true,
+                        message:
+                            '总共'+ response.extend.countMax+
+                            '<br>导入'+response.extend.count+
+                            '<br>详细错误：<br>'+response.extend.excepionMessage
+                        ,
+                        type:'error',
+                        position: 'top-right',
+                    });
+                }
+            },
+            look(index){
+                var idProject = this.subjects[index].id;
+                axios.get(basePath+"/admin/studentsBySubject",{
+                    params:{
+                        id : idProject
+                    }
+                }).then((data) => {
+                    console.log(data);
+                    this.students = null;
+                    this.students = data.data.extend.students;
+                    this.showSubject = true;
+                    this.count = data.data.extend.count;
+
+                    this.statuse =  new Map();
+                    var jsonObj = data.data.extend.statuse;
+                    console.log("jsonOBj",jsonObj);
+                    console.log("jsonObj.keys()",Object.keys(jsonObj))
+                    for(var k of Object.keys(jsonObj)){
+                        this.statuse.set(k,jsonObj[k]);
+                    }
+
+                });
+            },
+            showStatuse(index){
+                if( this.statuse.get(this.students[index].id+'')== 3 ){
+                    return "被老师选取";
+                }else{
+                    return "待选取";
+                }
+            },
+            viewSCope(e){
+                console.log(e);
+            }
+
+        },
+        create(){
+
+        },
+        mounted(){
+            this.page(1);
+            //教研室
+            axios.get(basePath+"/admin/sections").then((data) => {
+                this.sections=data.data.extend.sections;
+            });
+            //加载课题来源
+            axios.get(basePath+"/admin/sources").then((data) => {
+                this.sources=data.data.extend.sources;
+            });
+            //加载课题类型
+            axios.get(basePath+"/admin/sujecttypes").then((data) => {
+                this.sujecttypes=data.data.extend.sujecttypes;
+            });
+            //加载专业
+            axios.get(basePath+"/admin/specialtys", {
+                    params: {
+                        "offset": -1
+                    }
+                }
+            ).then((data) => {
+                this.specialtys=data.data.extend.specialtys;
+            });
+            //加载教师
+            axios.get(basePath+"/admin/teachers", {
+                    params: {
+                        "offset": -1
+                    }
+                }
+            ).then((data) => {
+                this.teachers=data.data.extend.teachers;
+            });
+            //加载班级
+            axios.get(basePath+"/admin/classes", {
+                    params: {
+                        "offset": -1
+                    }
+                }
+            ).then((data) => {
+                var classes = data.data.extend.classes;
+                this.classes = new Map();
+                for(var i = 0, len = classes.length ; i < len; i++){
+                    this.classes.set(classes[i].id,classes[i].className);
+                }
+            });
+        }
+    })
+
+</script>
+</html>

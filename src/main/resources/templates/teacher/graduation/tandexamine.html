@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+
+        table tr {
+            height: 50px;
+        }
+
+        table td {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        table th {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .checkx2 {
+            text-align: center;
+            font-size: 16px;
+            position: relative !important;
+            left: 0 !important;
+        }
+
+        .checkx {
+            text-align: center;
+            font-size: 16px;
+            position: relative !important;
+            left: 0 !important;
+        }
+
+        .ianx {
+            margin: 0 2px;
+            background-color: transparent;
+            border-radius: 2px;
+            border: 1px solid #E3E3E3;
+        }
+
+        .labin {
+            width: 50px;
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        .labin #checkbox-bool {
+            position: relative !important;
+            left: 0 !important;
+        }
+
+        .btn-box {
+            display: flex;
+            /*justify-content: space-between;*/
+            justify-content: center;
+            width: 76px;
+            position: absolute;
+            top: 35px;
+            right: 15px;
+        }
+
+        .btn-box button {
+            width: 60px;
+            height: 30px;
+            background: #23CCEF !important;
+            color: #fff;
+            font-size: 11px;
+            border: none;
+            border-color: #23CCEF !important;
+            border-radius: 5px;
+        }
+
+        td input {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2">
+
+                            <select class="form-control" id="name">
+                                <option disabled selected style='display:none;'>第一指导教师</option>
+                                <option></option>
+                                <option th:each="p:${list_teahcer}" th:text="${p.name}" th:value="${p.id}"></option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-default" id="all">全部</button>
+                                <button type="button" class="btn btn-default" id="submitted">已提交</button>
+                                <button type="button" class="btn btn-default" id="success">已通过</button>
+                                <button type="button" class="btn btn-default" id="failed">未通过</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-6"><span style="color: red; font-size: 22px">课题审核一旦提交，教师无法删除，请谨慎操作</span>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+
+
+                    <table class="table table-hover" style="background-color:white;">
+                        <thead>
+                        <tr style="background-color:#00ffff">
+                            <th>序号</th>
+                            <th>课题名称</th>
+                            <th>课题类型</th>
+                            <th>课题来源</th>
+                            <th>适用专业</th>
+                            <th>指导老师</th>
+                            <th>发布状态</th>
+                            <th>课题附件</th>
+                            <th>当前状态</th>
+                            <th width="150">操作</th>
+                            <th>
+                                <div class="labin">
+                                    全选<input type="checkbox" id="checkbox-bool" onclick="checkall()">
+                                </div>
+                                <div class="btn-box">
+                                    <button onclick="pass(2)">通过</button>
+                                    <button onclick="down()">驳回</button>
+                                </div>
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        <tr th:each="lp, project: ${list_project}">
+                            <td th:text="${project.count}"></td>
+                            <td th:text="${lp.projectname}"></td>
+                            <td th:text="${lp.typeName}"></td>
+                            <td th:text="${lp.sourceName}"></td>
+                            <td th:text="${lp.marchspecialty}"></td>
+                            <td th:text="${lp.teachernames}"></td>
+
+                            <td>
+                                <a th:text="下载附件" th:href="@{/static/file_download(project_id=${lp.id})}"></a>
+                            </td>
+                            <td th:if="${lp.releaseFlag==1}">
+                                已发布
+                            </td>
+                            <td th:if="${lp.releaseFlag==0}">
+                                未发布
+                            </td>
+                            <td th:class="'projectZT_'+${lp.id}" th:text="${lp.projectZT}"></td>
+
+                            <td th:class="'item-btn-box_'+${lp.id}" th:if="${lp.verifyprojectFlag == 0}">
+                                <button type="button" class="btn btn-info btn-xs"
+                                        th:onclick="|studAjax(this,${lp.id})|">通过
+                                </button>
+                                <button type="button" class="btn btn-info btn-xs"
+                                        th:onclick="|studAjax(this,${lp.id})|">驳回
+                                </button>
+                            </td>
+                            <td th:if="${lp.verifyprojectFlag == 1}">
+                            </td>
+                            <td th:class="'item-btn-box_'+${lp.id}" class="item-btn-box"
+                                th:if="${lp.verifyprojectFlag == 2}">
+                                <a class="btn btn btn-info btn-xs" th:onclick="|reject(${lp.id})|" role="button">驳回</a>
+                            </td>
+                            <td>
+                                <input th:onclick="|pd(${lp.id})|" name="check" th:id="${lp.id}" type="checkbox"
+                                       class="checkx" th:value="|${lp.verifyprojectFlag}q${lp.id}|">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+
+<script>
+    //全部选中复选框
+    function checkall() {
+        let a = document.getElementById("checkbox-bool");
+        let obj = document.getElementsByName("check");
+        for (let i = 1; i < obj.length; i++) {
+            let split = obj[0].value.split("q");
+            let split2 = obj[i].value.split("q");
+            if (split[0] != split2[0]) {
+                alert("全选必须为相同状态的课题");
+                a.checked = false;
+                return;
+            }
+        }
+        for (let i = 0; i < obj.length; i++) {
+            if (a.checked) {
+                obj[i].checked = true;
+            } else {
+                obj[i].checked = false;
+            }
+        }
+    }
+
+    //判断复选框是否为同一状态
+    function pd(id) {
+        let obj = document.getElementsByName("check");
+        let num = new Array(), jishu = 0;
+        for (let i = 0; i < obj.length; i++) {
+            if (obj[i].checked) {
+                let split = obj[i].value.split("q");
+                num[jishu++] = split[0];
+            }
+        }
+        for(let i=1;i<num.length;i++){
+            if(num[0]!=num[i]){
+                alert("请选择相同状态的课题");
+                document.getElementById(id).checked = false;
+                break;
+            }
+        }
+        // if (num[0] != num[num.length - 1]) {
+        //     alert("请选择相同状态的课题");
+        //     document.getElementById(id).checked = false;
+        // }
+    }
+
+    //批量通过
+    function pass(fb) {
+        let obj = document.getElementsByName("check");
+        let num = new Array(), jishu = 0, retu = 0;
+        for (let i = 0; i < obj.length; i++) {
+            if (obj[i].checked) {
+                let split = obj[i].value.split("q");
+                if (split[0] == 0) {
+                    num[jishu++] = split[1];
+                } else {
+                    alert("通过失败，请确定您的选项为未审核状态");
+                    retu = 1;
+                    return;
+                }
+
+            }
+        }
+        if (retu == 1) {
+            return;
+        }
+        let req = {
+            project_id: num,
+            zt: fb
+        }
+        $.ajax({
+            url: 'SH_project2',
+            type: 'POST',
+            data: JSON.stringify(req),
+            dataType: 'json',
+            contentType: "application/json",
+            traditional: true,
+            success: function (result) {
+                if (result.code == 100) {
+                    alert("处理成功")
+                    for (let id in num) {
+                        $(".item-btn-box_" + num[id]).html(" <button type=\"button\" class=\"btn btn-info btn-xs\">驳回</button>")
+                        $(".item-btn-box_" + num[id] + " button").click(() => reject(num[id]))
+                        $(".projectZT_" + num[id]).html("审核通过");
+                        $('#'+num[id]).val(2+'q'+num[id])
+                        let obj = document.getElementsByName("check");
+                        for (let i = 0; i < obj.length; i++) {
+                            obj[i].checked = false
+                        }
+                    }
+                    // window.location.href = "tandexamine";
+                } else if (result.code == 200) {
+                    alert("处理失败，请选择一个选项");
+                }
+            },
+            error: function () {
+                alert("处理失败！");
+            }
+        })
+    }
+
+    // 0 1 2
+    ////批量驳回
+    function down() {
+        let num = new Array(), jishu = 0, retu = 0, fb;
+        let obj = document.getElementsByName("check");
+        for (let i = 0; i < obj.length; i++) {
+            if (obj[i].checked) {
+                let split = obj[i].value.split("q");
+                console.log(split[0])
+                if (split[0] == 1) {
+                    alert("已经驳回了哦");
+                    retu = 1;
+                    return;
+                } else  {
+                    num[jishu++] = split[1];
+                    fb = split[0];
+                }
+            }
+        }
+        if (retu == 1) {
+            return;
+        }
+        let req = {
+            zt: fb,
+            project_id: num
+        }
+        $.ajax({
+            url: 'reject_project2',
+            type: 'POST',
+            data: JSON.stringify(req),
+            dataType: 'json',
+            contentType: "application/json",
+            traditional: true,
+            success: function (result) {
+                if (result.code == 100) {
+                    alert("驳回成功")
+                    // console.log(num)
+                    for (let id in num) {
+                        console.log("id => "+num[id])
+                        console.log('fb=>'+fb)
+                        if (fb == 2) {
+                            $(".item-btn-box_" + num[id]).eq(0).html(" <button type=\"button\" class=\"btn btn-info btn-xs\"\n" +
+                                "                                       >通过" +
+                                "                                </button><button type=\"button\" class=\"btn btn-info btn-xs\"\n" +
+                                "                                       >驳回" +
+                                "                                </button>")
+                            $(".item-btn-box_" + num[id] + " button").eq(0).click(() => studAjax($(".item-btn-box_" + num[id] + " button").eq(0), num[id]))
+                            $(".item-btn-box_" + num[id] + " button").eq(1).click(() => studAjax($(".item-btn-box_" + num[id] + " button").eq(1), num[id]))
+                            $(".projectZT_" + num[id]).html("未审核")
+                            $('#'+num[id]).val(0+'q'+num[id])
+
+                        } else if (fb == 0) {
+                            $(".item-btn-box_" + num[id]).html("")
+                            $(".projectZT_" + num[id]).html("审核未通过")
+                            $('#'+num[id]).val(1+'q'+num[id])
+                        }
+
+                    }
+                    let obj = document.getElementsByName("check");
+                    for (let i = 0; i < obj.length; i++) {
+                        obj[i].checked = false
+                    }
+                } else if (result.code == 300) {
+                    alert("处理失败，请选择一个选项");
+                } else {
+                    alert("选中课题可能有为打开状态或者是未取消发布")
+                }
+            },
+            error: function () {
+                alert("处理失败！");
+            }
+        })
+    }
+
+    function studAjax(ojb, projectID) {
+        let a = $("button").index(ojb);
+        let b = $("button").eq(a);
+        let fb;
+        if ($.trim($(b).html()) === "通过") fb = 2;
+        else fb = 1;
+        $.ajax({
+            url: 'SH_project',
+            type: 'POST',
+            data: {'zt': fb, 'projectID': projectID},
+            async: false,
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            success: function (PD) {
+                alert("处理成功")
+                if (fb === 2) {
+                    $(".item-btn-box_" + projectID).html(" <button type=\"button\" class=\"btn btn-info btn-xs\">驳回</button>")
+                    $(".item-btn-box_" + projectID + " button").click(() => reject(projectID))
+                    $(".projectZT_" + projectID).html("审核通过")
+                    $('#'+projectID).val(fb+'q'+projectID)
+                } else if (fb === 1) {
+                    $(".item-btn-box_" + projectID).html("")
+                    $(".projectZT_" + projectID).html("审核未通过")
+                    $('#'+projectID).val(fb+'q'+projectID)
+                }
+                $('#'+projectID).attr('checked',false);
+            },
+            error: function () {
+                alert("处理失败！");
+            }
+        })
+    }
+
+    function reject(projectID) {
+        $.ajax({
+            url: "reject_project",
+            type: "get",
+            data: {'project_id': projectID},
+            async: false,
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            success: function (result) {
+                if (result.code == 100) {
+                    alert("驳回成功")
+                    $(".item-btn-box_" + projectID).html(" <button type=\"button\" class=\"btn btn-info btn-xs\"\n" +
+                        "                                       >通过" +
+                        "                                </button><button type=\"button\" class=\"btn btn-info btn-xs\"\n" +
+                        "                                       >驳回" +
+                        "                                </button>")
+                    $(".item-btn-box_" + projectID + " button").eq(0).click(() => studAjax($(".item-btn-box_" + projectID + " button").eq(0), projectID))
+                    $(".item-btn-box_" + projectID + " button").eq(1).click(() => studAjax($(".item-btn-box_" + projectID + " button").eq(1), projectID))
+                    $(".projectZT_" + projectID).html("未审核")
+                    $('#'+projectID).val(0+'q'+projectID)
+                    $('#'+projectID).attr('checked',false);
+                } else {
+                    alert("课题可能为打开状态或者是未取消发布")
+                }
+
+            }
+        })
+    }
+
+
+    //查询所有课程
+    $("#all").click(function () {
+        let name = $("#name").val()
+        $.ajax({
+            url: "condition_teacher",
+            type: "get",
+            contentType: 'application/x-www-form-urlencoded',
+            async: false,
+            data: {
+                zt: null, id_teacher: name
+            },
+            success: function (result) {
+                build(result)
+            }
+        })
+    })
+
+    //查询提交课程
+    $("#submitted").click(function () {
+        let name = $("#name").val()
+        $.ajax({
+            url: "condition_teacher",
+            type: "get",
+            contentType: 'application/x-www-form-urlencoded',
+            async: false,
+            data: {
+                zt: 0, id_teacher: name
+            },
+            success: function (result) {
+                build(result)
+            }
+        })
+    })
+
+    // 查询成功课程
+    $("#success").click(function () {
+        let name = $("#name").val()
+        $.ajax({
+            url: "condition_teacher",
+            type: "get",
+            contentType: 'application/x-www-form-urlencoded',
+            async: false,
+            data: {
+                zt: 2, id_teacher: name
+            },
+            success: function (result) {
+                build(result)
+            }
+        })
+    })
+    // 查询失败课程
+    $("#failed").click(function () {
+        let name = $("#name").val()
+        $.ajax({
+            url: "condition_teacher",
+            type: "get",
+            contentType: 'application/x-www-form-urlencoded',
+            async: false,
+            data: {
+                zt: 1, id_teacher: name
+            },
+            success: function (result) {
+                build(result)
+            }
+        })
+    })
+
+    function build(result) {
+        $("#tbody").empty()
+        let project = result.extend.projectList;
+        $.each(project, function (index, item) {
+            let Id = $("<td></td>").append(index + 1);
+            let proName = $("<td></td>").append(item.projectname);
+            let proTypeName = $("<td></td>").append(item.typeName);
+            let proSourceName = $("<td></td>").append(item.sourceName);
+            let proTeacherNames = $("<td></td>").append(item.teachernames);
+            let proMarchspecialty = $("<td></td>").append(item.marchspecialty);
+            let profile = $("<td></td>").append($("<a></a>").append("下载附件").attr("href", "file_download?project_id=" + item.id));
+            //复选框
+            let fu1 = $("<input type='checkbox' />").addClass("checkx").attr("onclick", "pd(" + item.id + ");").attr("name", "check").attr("value", item.verifyprojectFlag + "q" + item.id).attr("id", item.id);
+            let fu = $("<td></td>").append(fu1);
+            let btnTd = $("<td></td>").addClass("projectZT_" + item.id).append(item.projectZT);
+            let rejectTd
+
+        // <td th:if="${lp.releaseFlag==1}">
+        //         已发布
+        //         </td>
+        //         <td th:if="${lp.releaseFlag==0}">
+        //         未发布
+        //         </td>
+
+            if(item.releaseFlag==1){
+                fabu = $("<td></td>").append('已发布');
+            }
+            if(item.releaseFlag==0){
+                fabu = $("<td></td>").append('未发布');
+            }
+            if (item.verifyprojectFlag == 2) {
+                let rejectbtn = $("<button></button>")
+                    .addClass("btn btn btn-info btn-xs")
+
+                    .attr("onclick", "reject(" + item.id + ");")
+                    .attr("role", "button").append("驳回");
+                 rejectTd = $("<td></td>").addClass("item-btn-box_" + item.id).append(rejectbtn);
+            } else if (item.verifyprojectFlag == 0) {
+                let rejectbtn1 = $("<button></button>")
+                    .addClass("btn btn btn-info btn-xs")
+                    .attr("onclick", "studAjax(this," + item.id + ");")
+                    .attr("role", "button").append("通过");
+                let rejectbtn2 = $("<button></button>").addClass("btn btn btn-info btn-xs").attr("onclick", "studAjax(this," + item.id + ");")
+                    .attr("role", "button").append("驳回");
+                 rejectTd = $("<td></td>").addClass("item-btn-box_" + item.id).append(rejectbtn1).append(" ").append(rejectbtn2);
+            } else if (item.verifyprojectFlag == 1) {
+                 rejectTd = $("<td></td>");
+            }
+            $("<tr></tr>")
+                .append(Id)
+                .append(proName)
+                .append(proTypeName)
+                .append(proSourceName)
+                .append(proMarchspecialty)
+                .append(proTeacherNames)
+                .append(profile)
+                .append(btnTd)
+                .append(fabu)
+                .append(rejectTd)
+                .append(fu)
+                .appendTo("#tbody");
+        })
+
+    }
+</script>
+</html>

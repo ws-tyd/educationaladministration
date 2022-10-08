@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.StaticMapper">
+
+    <resultMap id="XYallzy" type="com.hngy.educationaladministration.entity.Specialty">
+        <result column="specialty_name" property="specialtyName"/>
+    </resultMap>
+    <select id="selectSpercialtyByall" resultMap="XYallzy">
+        SELECT
+        t_specialty.specialty_name
+        FROM
+        t_institute
+        INNER JOIN t_section ON t_section.id_institute = t_institute.id
+        INNER JOIN t_specialty ON t_specialty.id_section = t_section.id
+        WHERE
+        t_institute.institute_name = #{name}
+    </select>
+
+
+    <resultMap id="XYallClass" type="com.hngy.educationaladministration.entity.Class">
+        <result column="class_name" property="className"/>
+    </resultMap>
+    <select id="selectClassByall" resultMap="XYallClass">
+        SELECT
+        t_class.class_name
+        FROM
+        t_institute
+        INNER JOIN t_section ON t_section.id_institute = t_institute.id
+        INNER JOIN t_specialty ON t_specialty.id_section = t_section.id
+        INNER JOIN t_class ON t_class.id_specialty = t_specialty.id
+        WHERE
+        t_institute.institute_name = #{name}
+    </select>
+
+    <!--Static_student 学生数据源-->
+    <resultMap id="CXstudent" type="com.hngy.educationaladministration.entity.Static_student">
+        <id column="sid" property="id"/>
+        <result column="userName" property="userName"/>
+        <result column="stuNum" property="stuNum"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="pwd" property="pwd"/>
+        <result column="class_name" property="class_name"/>
+        <result column="specialty_name" property="specialty_name"/>
+        <result column="section_name" property="section_name"/>
+        <result column="institute_name" property="institute_name"/>
+        <result column="projectName" property="projectname"/>
+        <result column="pid" property="projectid"/>
+        <result column="teachernames" property="teachernames"/>
+        <result column="filePath" property="filepath"/>
+        <result column="stuSelect_flag" property="stuselectFlag"/>
+    </resultMap>
+
+    <select id="seleStudentbyName" resultMap="CXstudent">
+        SELECT
+        t_student.userName,
+        t_student.stuNum,
+        t_student.name,
+        t_student.gender,
+        t_student.pwd,
+        t_class.class_name,
+        t_specialty.specialty_name,
+        t_section.section_name,
+        t_institute.institute_name
+        FROM
+        t_student
+        INNER JOIN t_class ON t_student.id_class = t_class.id
+        INNER JOIN t_specialty ON t_class.id_specialty = t_specialty.id
+        INNER JOIN t_section ON t_specialty.id_section = t_section.id
+        INNER JOIN t_institute ON t_section.id_institute = t_institute.id
+        WHERE
+        t_student.userName = #{name} OR
+        t_student.stuNum = #{name} OR
+        t_student.name = #{name}
+    </select>
+
+    <select id="seleStudentbyTJ" parameterType="java.lang.String" resultMap="CXstudent">
+SELECT
+t_student.id as sid,
+t_student.name,
+t_student.stuNum,
+t_class.class_name,
+t_projectselected.stuSelect_flag,
+t_project.projectName,
+t_project.id as pid,
+t_project.filePath,
+t_specialty.specialty_name
+FROM
+t_student
+INNER JOIN t_class ON t_student.id_class = t_class.id
+INNER JOIN t_projectselected ON t_projectselected.id_student = t_student.id
+INNER JOIN t_project ON t_projectselected.id_project = t_project.id
+INNER JOIN t_specialty ON t_class.id_specialty = t_specialty.id
+WHERE
+t_specialty.specialty_name = #{name1} OR
+t_class.class_name = #{name2} OR
+t_project.projectName = #{name3}
+</select>
+
+    <!--Static_student 查询教研室下的专业方向-->
+    <resultMap id="CXSection" type="com.hngy.educationaladministration.entity.Specialty">
+        <id column="id" property="id"/>
+        <result column="specialty_name" property="specialtyName"/>
+        <result column="id_section" property="idSection"/>
+    </resultMap>
+    <select id="select_allSpecialty" parameterType="java.lang.Long" resultMap="CXSection">
+SELECT
+t_specialty.id,
+t_specialty.specialty_name,
+t_specialty.id_section,
+t_specialty.remark
+FROM
+t_section
+INNER JOIN t_specialty ON t_specialty.id_section = t_section.id
+WHERE
+t_section.id=#{section}
+</select>
+</mapper>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr {
+            height: 50px;
+        }
+
+        table td {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        table th {
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header text-center">
+                            <h4>
+
+                            </h4>
+                        </div>
+                        <div class="card-body">
+
+                            <table class="table table-bordered" style="background-color:white;">
+                                <thead>
+                                <tr style="background-color:#00ffff">
+                                    <th>序号</th>
+                                    <th>适用专业</th>
+                                    <th>指导教师</th>
+                                    <th>课题名字</th>
+                                    <th>课题类型</th>
+                                    <th>课题来源</th>
+                                    <th>老师确定人数</th>
+                                    <th>选报总人数</th>
+                                    <th>当前状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="m, project:${Myproject}">
+                                    <th th:text="${project.count}"></th>
+                                    <th th:text="${m.marchspecialty}"></th>
+                                    <th th:text="${m.teachernames}"></th>
+                                    <th><a th:href="@{/static/topicsinfoto(projectName=${m.projectname})}"
+                                           th:text="${m.projectname}"></a></th>
+                                    <th th:text="${m.typeName}"></th>
+                                    <th th:text="${m.sourceName}"></th>
+                                    <th th:text="${number[project.count - 1]}"></th>
+                                    <th th:text="${m.selectcount}"></th>
+                                    <th th:text="${m.projectGB}"></th>
+                                    <th style="width:110px">
+                                        <button type="button" class="btn btn-info btn-xs"
+                                                th:onclick="|fun(this,${m.id})|"
+                                                th:if="${m.selectFlag==0}">关闭课题
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-xs"
+                                                th:onclick="|fun(this,${m.id})|"
+                                                th:unless="${m.selectFlag==0}">打开课题
+                                        </button>
+                                    </th>
+
+
+                                </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                        <div class="text-center" style="color: red; font-size: 16px">
+                            <span>当前教师确定选报人数：</span><span th:text="${successNum}"></span>&nbsp;&nbsp;&nbsp;
+                            <span>总选报人数：</span><span th:text="${allNum}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/graduation/section_xb/subjectclass.js}"></script>
+
+</html>

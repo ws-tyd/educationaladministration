@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>毕业设计选题系统</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <style>
+        td {
+            text-align: center
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper panel panel-default">
+    <div th:replace="student/public-student-index :: header"></div>
+    <div th:replace="student/public-student-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <table style="background-color:white" class="table table-bordered table-hover">
+                <tr class="danger">
+                    <td width="100"><strong>序号</strong></td>
+                    <td width="100"><strong>班级</strong></td>
+                    <td width="100"><strong>学号</strong></td>
+                    <td width="100"><strong>姓名</strong></td>
+                    <td width="400"><strong>课题</strong></td>
+                    <td width="100"><strong>教师</strong></td>
+                    <td width="100"><strong>状态</strong></td>
+                </tr>
+                <tr th:each="list,iterStar : ${list}">
+                    <td width="100" th:text="${iterStar.count}"></td>
+                    <td width="90" th:text="${list.class_name}"></td>
+                    <td width="130" th:text="${list.stuNum}"></td>
+                    <td width="100" th:text="${list.name}"></td>
+                    <td width="100" th:text="${list.projectname}"></td>
+                    <td width="100" th:text="${list.teachernames}"></td>
+                    <td width="100" th:text="${list.stuselectFlag}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+</html>

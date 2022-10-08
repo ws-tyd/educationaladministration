@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hngy.educationaladministration.mapper.SubjectselectedMapper">
+
+    <resultMap type="com.hngy.educationaladministration.entity.Subjectselected" id="Tprojectselected">
+        <id property="id" column="id"/>
+        <result property="idStudent" column="id_student"/>
+        <result property="idProject" column="id_project"/>
+        <result property="stuSelectFlag" column="stuSelect_flag"/>
+        <!--id,class_name as className,id_specialty as idSpecialty-->
+    </resultMap>
+
+    <select id="selectBystudentid" parameterType="Long" resultMap="Tprojectselected">
+        select * from t_projectselected where id_student = #{id}
+    </select>
+
+    <select id="selectByprojectid" parameterType="Long" resultMap="Tprojectselected">
+        select * from t_projectselected where id_project = #{id}
+    </select>
+
+    <insert id="insertenroll" parameterType="Long">
+        insert into t_projectselected(id_project,id_student,stuSelect_flag) values(#{projectid},#{studentid},1)
+    </insert>
+
+    <delete id="deleteBystudentId" parameterType="Long">
+        delete from t_projectselected where id_student = #{id}
+    </delete>
+
+</mapper>

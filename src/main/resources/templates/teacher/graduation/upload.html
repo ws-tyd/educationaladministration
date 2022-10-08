@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+    <!--     引入组件库-->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}"/>
+</head>
+<body>
+<div class="wrapper" id="app">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header text-center">
+                            <h4>
+
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    </br><strong>课题名称<span style="color: red">*</span></strong><input type="text" class="form-control" id="ktname"></br>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    </br><strong>课题类型</strong>
+                                    <select class="form-control" id="type">
+                                        <option th:value="${p.id}" th:text="${p.typename}" th:each="p:${projecttypes}"></option>
+                                    </select></br>
+                                </div>
+                                <div class="col-md-2"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    <strong>课题来源</strong>
+                                    <select class="form-control" id="sources">
+                                        <option th:value="${p.id}" th:text="${p.sourcename}" th:each="p:${projectsources}"></option>
+                                    </select></br>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    <strong>适用专业</strong>(可多选)<br>
+<!--                                    <select class="form-control" multiple id="s1">-->
+<!--                                        <option th:value="${s.specialtyName}" th:text="${s.specialtyName}" th:each="s: ${specialties}"></option>-->
+<!--                                    </select></br>-->
+
+                                    <el-select multiple v-model="marchspecialty" >
+                                        <el-option v-for="(specialty,index) in specialtys" :key="index"
+                                                   :label="specialty.specialtyName"
+                                                   :value="specialty.specialtyName">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-2"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    <strong>第一指导老师</strong><input type="text" class="form-control" id="teacher1"
+                                                                  th:value="${session.teacherInfo.name}" readonly="readonly"></br>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    <strong>第二指导老师</strong><input type="text" class="form-control" id="teacher2"></br>
+                                </div>
+                                <div class="col-md-2"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-4" style="background-color:white;"><h6><font
+                                        color="red">请上传课题附件</font></h6>
+                                    <form id="ss">
+                                        <input type="file" name="file" id="file">
+                                    </form>
+                                </div>
+                                <div class="col-md-4" style="background-color:white;"></div>
+                                <div class="col-md-2"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4" style="background-color:white;"></div>
+                                <div class="col-md-4" style="background-color:white;">
+                                    <button type="button" class="btn btn-primary" style="float:right;" onclick="aa()">上传</button>
+                                </div>
+                                <div class="col-md-2"></div>
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+
+    var app = new Vue({
+        el:"#app",
+        data(){
+            return{
+                specialtys:/*[[${specialties}]]*/'' ,
+                marchspecialty:[]
+            }
+        }
+    })
+
+    function aa() {
+
+        var formdata = new FormData(document.getElementById("ss"));
+
+        var a1 = $("#ktname").val();
+        var a2 = document.getElementById('type').options[document.getElementById('type').selectedIndex].value;
+        var a3 = document.getElementById('sources').options[document.getElementById('sources').selectedIndex].value;
+        // var a4 = $("#s1").text()
+        var a4 = app.marchspecialty;
+        var a5 = $("#teacher1").val();
+        var a6 = $("#teacher2").val();
+
+        var file = $("#file").val()
+
+        formdata.append("projectName", a1);
+        formdata.append("idProjecttype", a2);
+        formdata.append("idProjectsource", a3);
+        formdata.append("marchspecialty", a4);
+        if(a6 == ""){
+            formdata.append("teachernames", a5);
+        }else{
+            formdata.append("teachernames", a5 + "&" + a6);
+        }
+
+        if(a1 != "" && file != "" && a4 != ""){
+
+            //获取附件大小（单位：KB）
+            var fileSize = document.getElementById("file").files[0].size / 1024;
+            if(fileSize > 102400){
+                alert("文件大小不能超过100MB");
+            }else{
+                $.ajax({
+                    url: 'up_project',
+                    type: 'POST',
+                    data: formdata,
+                    async: false,
+                    cache: false,
+                    contentType: false, //不设置内容类型
+                    processData: false, //不处理数据
+                    success: function (data) {
+                        console.log(data);
+                        if(data.code==200){
+                            alert(data.extend.msg)
+                        }else{
+                            alert("课题上传成功!" + formdata.get("teachernames"));
+                        }
+                        window.location.href = "upload_topic_page";
+                    },
+                    error: function () {
+                        alert("shiwu!")
+                    }
+                })
+            }
+        }else{
+            alert("请详细填写课题信息")
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.DebriefingMapper">
+  <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.Debriefing">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="id_teacher" jdbcType="BIGINT" property="idTeacher" />
+    <result column="year" jdbcType="BIGINT" property="year" />
+    <result column="term" jdbcType="VARCHAR" property="term" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hngy.educationaladministration.entity.DebriefingWithBLOBs">
+    <result column="teachingTask" jdbcType="LONGVARCHAR" property="teachingtask" />
+    <result column="achievementsInScientificResearch" jdbcType="LONGVARCHAR" property="achievementsinscientificresearch" />
+    <result column="otherWork" jdbcType="LONGVARCHAR" property="otherwork" />
+    <result column="winAward" jdbcType="LONGVARCHAR" property="winaward" />
+    <result column="summary" jdbcType="LONGVARCHAR" property="summary" />
+    <result column="remark" jdbcType="LONGVARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, id_teacher, year, term
+  </sql>
+  <sql id="Blob_Column_List">
+    teachingTask, achievementsInScientificResearch, otherWork, winAward, summary, remark
+  </sql>
+
+  <!--自建查询-->
+  <select id="selectByYear" resultMap="BaseResultMap">
+    select year from t_debriefing
+  </select>
+  <select id="selectByIdAndYearTerm" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List"/>
+    ,
+    <include refid="Blob_Column_List"/>
+    from t_debriefing
+    where id_teacher = #{id_teacher,jdbcType=BIGINT} and year = #{year, jdbcType=BIGINT} and term = #{term, jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByExampleWithBLOBs" parameterType="com.hngy.educationaladministration.entity.DebriefingExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_debriefing
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.DebriefingExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_debriefing
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_debriefing
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_debriefing
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.DebriefingExample">
+    delete from t_debriefing
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hngy.educationaladministration.entity.DebriefingWithBLOBs">
+    insert into t_debriefing (id, id_teacher, year, 
+      term, teachingTask, achievementsInScientificResearch, 
+      otherWork, winAward, summary, 
+      remark)
+    values (#{id,jdbcType=BIGINT}, #{idTeacher,jdbcType=BIGINT}, #{year,jdbcType=BIGINT}, 
+      #{term,jdbcType=VARCHAR}, #{teachingtask,jdbcType=LONGVARCHAR}, #{achievementsinscientificresearch,jdbcType=LONGVARCHAR}, 
+      #{otherwork,jdbcType=LONGVARCHAR}, #{winaward,jdbcType=LONGVARCHAR}, #{summary,jdbcType=LONGVARCHAR}, 
+      #{remark,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.DebriefingWithBLOBs">
+    insert into t_debriefing
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="idTeacher != null">
+        id_teacher,
+      </if>
+      <if test="year != null">
+        year,
+      </if>
+      <if test="term != null">
+        term,
+      </if>
+      <if test="teachingtask != null">
+        teachingTask,
+      </if>
+      <if test="achievementsinscientificresearch != null">
+        achievementsInScientificResearch,
+      </if>
+      <if test="otherwork != null">
+        otherWork,
+      </if>
+      <if test="winaward != null">
+        winAward,
+      </if>
+      <if test="summary != null">
+        summary,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="idTeacher != null">
+        #{idTeacher,jdbcType=BIGINT},
+      </if>
+      <if test="year != null">
+        #{year,jdbcType=BIGINT},
+      </if>
+      <if test="term != null">
+        #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="teachingtask != null">
+        #{teachingtask,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="achievementsinscientificresearch != null">
+        #{achievementsinscientificresearch,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="otherwork != null">
+        #{otherwork,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="winaward != null">
+        #{winaward,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="summary != null">
+        #{summary,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.DebriefingExample" resultType="java.lang.Long">
+    select count(*) from t_debriefing
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_debriefing
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.idTeacher != null">
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+      </if>
+      <if test="record.year != null">
+        year = #{record.year,jdbcType=BIGINT},
+      </if>
+      <if test="record.term != null">
+        term = #{record.term,jdbcType=VARCHAR},
+      </if>
+      <if test="record.teachingtask != null">
+        teachingTask = #{record.teachingtask,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.achievementsinscientificresearch != null">
+        achievementsInScientificResearch = #{record.achievementsinscientificresearch,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.otherwork != null">
+        otherWork = #{record.otherwork,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.winaward != null">
+        winAward = #{record.winaward,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.summary != null">
+        summary = #{record.summary,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update t_debriefing
+    set id = #{record.id,jdbcType=BIGINT},
+      id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+      year = #{record.year,jdbcType=BIGINT},
+      term = #{record.term,jdbcType=VARCHAR},
+      teachingTask = #{record.teachingtask,jdbcType=LONGVARCHAR},
+      achievementsInScientificResearch = #{record.achievementsinscientificresearch,jdbcType=LONGVARCHAR},
+      otherWork = #{record.otherwork,jdbcType=LONGVARCHAR},
+      winAward = #{record.winaward,jdbcType=LONGVARCHAR},
+      summary = #{record.summary,jdbcType=LONGVARCHAR},
+      remark = #{record.remark,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_debriefing
+    set id = #{record.id,jdbcType=BIGINT},
+      id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+      year = #{record.year,jdbcType=BIGINT},
+      term = #{record.term,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hngy.educationaladministration.entity.DebriefingWithBLOBs">
+    update t_debriefing
+    <set>
+      <if test="idTeacher != null">
+        id_teacher = #{idTeacher,jdbcType=BIGINT},
+      </if>
+      <if test="year != null">
+        year = #{year,jdbcType=BIGINT},
+      </if>
+      <if test="term != null">
+        term = #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="teachingtask != null">
+        teachingTask = #{teachingtask,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="achievementsinscientificresearch != null">
+        achievementsInScientificResearch = #{achievementsinscientificresearch,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="otherwork != null">
+        otherWork = #{otherwork,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="winaward != null">
+        winAward = #{winaward,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="summary != null">
+        summary = #{summary,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hngy.educationaladministration.entity.DebriefingWithBLOBs">
+    update t_debriefing
+    set id_teacher = #{idTeacher,jdbcType=BIGINT},
+      year = #{year,jdbcType=BIGINT},
+      term = #{term,jdbcType=VARCHAR},
+      teachingTask = #{teachingtask,jdbcType=LONGVARCHAR},
+      achievementsInScientificResearch = #{achievementsinscientificresearch,jdbcType=LONGVARCHAR},
+      otherWork = #{otherwork,jdbcType=LONGVARCHAR},
+      winAward = #{winaward,jdbcType=LONGVARCHAR},
+      summary = #{summary,jdbcType=LONGVARCHAR},
+      remark = #{remark,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hngy.educationaladministration.entity.Debriefing">
+    update t_debriefing
+    set id_teacher = #{idTeacher,jdbcType=BIGINT},
+      year = #{year,jdbcType=BIGINT},
+      term = #{term,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

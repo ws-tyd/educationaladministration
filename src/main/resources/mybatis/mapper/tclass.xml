@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hngy.educationaladministration.mapper.MyClassMapper">
+
+    <resultMap type="com.hngy.educationaladministration.entity.MyClass" id="Tclass">
+        <id property="id" column="id"/>
+        <result property="className" column="class_name"/>
+        <result property="idSpecialty" column="id_specialty"/>
+        <!--id,class_name as className,id_specialty as idSpecialty-->
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="Tclass">
+        select * from t_class where id = #{id}
+    </select>
+
+    <select id="selectByclassName" parameterType="String" resultMap="Tclass">
+        select * from t_class where class_name = #{className}
+    </select>
+
+    <select id="selectByspecialty" parameterType="Long" resultType="String">
+        select specialty_name from t_specialty where id =(select id_specialty from t_class where id=#{id})
+    </select>
+
+</mapper>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr {
+            height: 40px;
+        }
+
+        table tr td {
+            text-align: center;
+        }
+
+        textarea {
+            border: none;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            cursor: pointer
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header text-center">
+                            <h4>
+                                <select id="year">
+                                </select>
+                                年度专业技术人员考核表
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <a id="herf" style="float: right">点击下载</a>
+                            <table class="table table-bordered" style="table-layout:fixed; overflow:hidden;" border="1"
+                                   width="80%"
+                                   bgcolor="#fff" cellspacing="0" align="center">
+                                <tr>
+                                    <td colspan="2">姓名</td>
+                                    <td colspan="2" th:text="${session.teacherInfo.name}"></td>
+                                    <td colspan="3">性别</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.gender}"></td>
+                                    <td colspan="3">身份证号</td>
+                                    <td colspan="3" th:text="${session.teacherInfo.idcardno}"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4">工作岗位</td>
+                                    <td colspan="4" th:text="${session.teacherInfo.instituteName}"></td>
+                                    <td colspan="4">行政职务</td>
+                                    <td colspan="4" th:text="${session.teacherInfo.administrativeduty}"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4">已获专业技术职称</td>
+                                    <td colspan="4" th:text="${session.teacherInfo.technicalposition}"></td>
+                                    <td colspan="4">聘任专业技术职务</td>
+                                    <td colspan="4" th:text="${session.teacherInfo.technicalpositiongeted}"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">主<br>要<br>业<br>绩<br>(<br>含<br>政<br>治<br>表<br>现<br>、<br>学<br>识<br>
+                                        水<br>平<br>、<br>业<br>务<br>能<br>力<br>、<br>工<br>作<br>成<br>就<br>）
+                                    </td>
+                                    <td colspan="14">
+                                        <textarea rows="30" id="mainAchievements" readonly="readonly"></textarea>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">出<br>勤<br>情<br>况</td>
+                                    <td colspan="14"><textarea rows="6" id="attendance" readonly="readonly"></textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">奖<br>惩<br>情<br>况</td>
+                                    <td colspan="14"><textarea rows="6" id="rewardsAndPunishments" readonly="readonly"></textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">
+                                        意&nbsp;&nbsp;&nbsp;所<br>见&nbsp;&nbsp;&nbsp;在<br>及&nbsp;&nbsp;&nbsp;部<br>结&nbsp;&nbsp;&nbsp;门<br>
+                                        论&nbsp;&nbsp;&nbsp;考<br>&emsp;&nbsp;&nbsp;&nbsp;核
+                                    </td>
+                                    <td colspan="14"><textarea rows="10" readonly="readonly"></textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">
+                                        &emsp;&nbsp;&nbsp;&nbsp;单<br>及&nbsp;&nbsp;&nbsp;位<br>结&nbsp;&nbsp;&nbsp;考<br>论&nbsp;&nbsp;&nbsp;核<br>
+                                        &emsp;&nbsp;&nbsp;&nbsp;意<br>&emsp;&nbsp;&nbsp;&nbsp;见
+                                    </td>
+                                    <td colspan="14"><textarea rows="10" readonly="readonly"></textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">被<br>考<br>核<br>人<br>意<br>见</td>
+                                    <td colspan="14"><textarea rows="11" readonly="readonly"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="16">
+                                        <button type="button" class="btn btn-default" id="submit" flag="1">修改</button>
+                                    </td>
+                                </tr>
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/showtable/technicalpersonnel.js}"></script>
+</html>

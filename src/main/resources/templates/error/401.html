@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <base th:href="@{/}">
+    <meta charset="UTF-8">
+    <title>401</title>
+</head>
+<body>
+<h3>登录超时</h3>
+<span>(三秒后自动跳到登录页，如没有反应，请点击<a href="/">首页</a>)</span>
+</body>
+
+<script th:inline="javascript">
+
+
+    setTimeout(
+        function(){
+            window.location="/";
+        },3000);
+
+</script>
+</html>

@@ -1,0 +1,76 @@
+spring:
+  # 环境 dev|test|prod | ctp
+#  profiles:
+#    active: pro
+
+
+  datasource:
+    username: root
+#    password: rjjys5301
+    password: 121314
+
+    url: jdbc:mysql://localhost:3306/edumanagement?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false
+    #    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5
+
+
+  thymeleaf:
+    cache: false
+    mode: HTML
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 500MB
+
+
+
+  jackson:
+    default-property-inclusion: non_null
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# MybatisPlus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*/*Mapper.xml
+  type-aliases-package: com.hngy.educationaladministration.plus.entity
+
+#logging:
+#  level:
+#    com:
+#      hngy:
+#        educationaladministration: info
+
+logging:
+  level:
+    com.hngy.educationaladministration.mapper: debug
+
+
+server:
+  port: 8099
+  servlet:
+    context-path: /edumanagement
+

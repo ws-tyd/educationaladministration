@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+</head>
+<body>
+<div class="wrapper">
+
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header">
+                            <h5 class="card-title">修改密码</h5>
+                        </div>
+                        <div class="card-body">
+                            <form class="form-horizontal" id="pwdform">
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label">原密码</label>
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-6">
+                                        <input type="password" class="form-control" name="oldpwd">
+                                    </div>
+                                </div>
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label">新密码</label>
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-6">
+                                        <input type="password" class="form-control" id="pwd">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span style="color: red">长度6-20位 由字母、数字、字符两者以上构成</span>
+                                    </div>
+                                </div>
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label">确认密码</label>
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-6">
+                                        <input type="password" class="form-control" name="newpwd" id="pwd1">
+                                    </div>
+                                </div>
+                                <div class="form-group card-header text-center">
+                                    <button type="button" class="btn btn-primary" id="sub">修改</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript">
+    $("#sub").click(function () {
+        var pwd1 = $("#pwd").val()
+        var pwd2 = $("#pwd1").val()
+
+        if (isPasswd(pwd1)) {
+            if (pwd1 == pwd2) {
+                $.ajax({
+                    url: "teacherupdetpwd",
+                    type: "post",
+                    async: false,
+                    data: $("#pwdform").serializeArray(),
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.extend.flag == 1) {
+                            alert("修改成功,请重新登录")
+                            window.location.href = "/edumanagement/teacher/exit"
+                        } else {
+                            alert("修改失败,原密码输入不正确");
+                        }
+                    }
+                })
+            } else {
+                alert("输入的两次密码不一致，请重新输入");
+            }
+        }else{
+            alert("密码格式不正确")
+        }
+
+    })
+
+    //验证密码，密码包含 数字,英文,字符中的两种以上，长度6-20
+    function isPasswd(s) {
+        var patrn = /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$/;
+        if (!patrn.exec(s)) return false
+        return true
+    }
+</script>
+</html>

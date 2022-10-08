@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.GeneralPurposeMapper">
+
+
+  <select id="selectSubjectsCount" resultType="Integer">
+    select count(*) from t_project where 1 = 1
+    <if test=" keyWord != null">
+      projectName = '${keyWord}'
+    </if>
+    and id_teacher in (select id from t_teacher where 1 = 1
+    <if test=" sectionId != null">
+      and id_section = #{sectionId}
+    </if>
+    <if test="id_institute != -1">
+      and id_section in (select id from t_section where id_institute = #{id_institute})
+    </if> )
+  </select>
+
+  <select id="selectSubjects" resultType="com.hngy.educationaladministration.entity.Subject">
+    select * from t_project where 1 = 1
+      <if test=" keyWord != null">
+        and projectName = '${keyWord}'
+      </if>
+        and id_teacher in (select id from t_teacher where 1 = 1
+      <if test=" sectionId != null">
+        and id_section = #{sectionId}
+      </if>
+      <if test="id_institute != -1">
+        and id_section in (select id from t_section where id_institute = #{id_institute})
+      </if> )
+       <if test=" offset !=-1">
+        limit #{offset} , 10
+      </if>
+
+  </select>
+
+</mapper>

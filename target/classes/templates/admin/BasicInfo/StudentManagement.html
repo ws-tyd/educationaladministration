@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <!--    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">-->
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+    <!--     引入组件库-->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}"/>
+
+    <title>教务综合管理系统</title>
+    <style>
+
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .el-select .el-input {
+
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .myfrom .mychild {
+            margin: 5px;
+        }
+
+        input[type=file] {
+            display: none;
+        }
+
+        .myBut {
+            margin-top: 2px;
+        }
+
+        .MyGrid {
+            display: grid;
+            grid-template-columns: repeat(4, 25%);
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="wrapper" id="app" v-cloak>
+
+    <el-dialog title="未导入学生" :visible.sync="errorFlag">
+        <el-table :data="errorData">
+            <el-table-column property="username" label="用户名"></el-table-column>
+            <el-table-column property="gender" label="错误原因"></el-table-column>
+        </el-table>
+    </el-dialog>
+
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="admin/public-admin-index :: header"></div>
+
+    <el-container style="height: 100%; border: 1px solid #eee">
+        <div th:replace="admin/public-admin-index :: left"></div>
+
+
+        <el-container>
+            <el-main>
+
+                <el-card class="box-card">
+
+                    <div style="margin-top: 15px;">
+                        <template>
+                            <div class="MyGrid">
+                                <div>
+                                    <el-select style="width: 100%" v-model="specialtyid" placeholder="请选择专业"
+                                               @change="updateClass">
+                                        <el-option
+                                                v-for="(specialty,index) in specialtys"
+                                                :key="index"
+                                                :label="specialty.specialtyName"
+                                                :value="specialty.id"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div>
+                                    <el-select style="width: 100%" v-model="classid" placeholder="请选择班级">
+                                        <el-option
+                                                v-for="(class_,index) in classes_select"
+                                                :key="index"
+                                                :label="class_.className"
+                                                :value="class_.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div>
+                                    <el-input style="width: 100%" placeholder="登录名or姓名or学号" v-model="input1"></el-input>
+                                </div>
+                                <div>
+                                    <el-button-group style="width: 100%">
+                                        <el-button icon="el-icon-search" @click="page(1)"></el-button>
+                                        <el-button icon="el-icon-delete"
+                                                   @click="specialtyid=classid=input1=null"></el-button>
+                                    </el-button-group>
+                                </div>
+                            </div>
+
+
+                        </template>
+                    </div>
+
+
+                    <hr>
+                    <h4 class="text-center">
+                        学生管理
+                        <button class="btn btn-warning pull-right btn-round" @click="drawer = true"> 添加学生</button>
+                    </h4>
+
+
+                    <el-drawer
+                            class="myfrom"
+                            size="77%"
+                            title="添加学生"
+                            :visible.sync="drawer"
+                            direction="btt">
+
+                        <el-row class="tac">
+                            <el-col :span="14">
+                                <el-card style="margin: 0 0 25px 5px ; display: inline-block">
+                                    <templeate>
+                                        <el-select class="mychild" v-model="student.idClass" slot="prepend"
+                                                   placeholder="请选择班级">
+                                            <el-option v-for="(class_,index) in classes" :key="index"
+                                                       :label="class_.className" :value="class_.id"></el-option>
+                                        </el-select>
+                                    </templeate>
+                                    <el-input class="mychild" placeholder="请输入账号" v-model="student.username"></el-input>
+                                    <el-input class="mychild" placeholder="请输入密码" v-model="student.pwd"></el-input>
+                                    <el-input class="mychild" placeholder="请输入学生名字" v-model="student.name"></el-input>
+                                    <el-input class="mychild" placeholder="请输入学号" v-model="student.stunum"></el-input>
+
+                                    <el-radio-group class="mychild" v-model="student.gender">
+                                        <el-radio label="男"></el-radio>
+                                        <el-radio label="女"></el-radio>
+                                    </el-radio-group>
+                                    <br>
+                                    <el-button class="mychild" type="primary" @click="add"
+                                               style="margin: 0 auto ; width: 100px">立即创建
+                                    </el-button>
+                                </el-card>
+                            </el-col>
+                            <!--                                                    name="excel"-->
+                            <el-col :span="10">
+                                <el-card style="margin: 0 0 25px 5px ; display: inline-block">
+                                    <el-upload
+                                            class="upload-demo"
+                                            ref="upload"
+                                            name="excel"
+                                            :on-success="uploadSuccess"
+                                            accept='.xls,.xlsx'
+                                            th:action="@{/admin/StudentExcel}"
+                                            :on-preview="handlePreview"
+                                            :on-remove="handleRemove"
+                                            :file-list="fileList"
+                                            :auto-upload="false">
+                                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                        <el-button style="" size="small" type="success" @click="submitUpload">上传到服务器
+                                        </el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传excel文件.</div>
+                                    </el-upload>
+                                    <el-divider> tips</el-divider>
+                                    <div>
+                                        <el-link type="primary" th:href="@{/admin/StudentExcelDemo}">模板下载</el-link>
+                                        <el-button v-if="errorView" type="warning" @click="errorFlag = true">显示导入失败名单
+                                        </el-button>
+                                    </div>
+
+                                </el-card>
+                            </el-col>
+                        </el-row>
+
+                    </el-drawer>
+
+                    <div class="card-body">
+
+                        <template>
+                            <el-table
+                                    v-loading="loading"
+                                    :data="students"
+                                    style="width: 100%">
+                                <el-table-column
+                                        label="姓名"
+                                        width="200"
+                                        fixed
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input style="width: 100%"
+                                                v-model="students[scope.$index].name"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="登录名"
+                                        width="160"
+                                        align="center"
+                                        prop="username">
+                                </el-table-column>
+                                <el-table-column
+                                        label="密码"
+                                        width="200"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input
+                                                v-model="students[scope.$index].pwd"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <!--                                    <el-table-column-->
+                                <!--                                            label="专业"-->
+                                <!--                                            width="150">-->
+                                <!--                                        <template slot-scope="scope">-->
+                                <!--                                            <el-select v-model="append.specialtyId" slot="prepend" :disabled="scope.$index!=flag">-->
+                                <!--                                                <el-option v-for="(specialty,index) in specialtys" :key="index"-->
+                                <!--                                                           :label="specialty.specialtyName"-->
+                                <!--                                                           :value="specialty.id"-->
+                                <!--                                                >-->
+                                <!--                                                </el-option>-->
+                                <!--                                            </el-select>-->
+                                <!--                                        </template>-->
+                                <!--                                    </el-table-column>-->
+                                <el-table-column
+                                        label="班级"
+                                        width="150"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select v-model="students[scope.$index].idClass" slot="prepend"
+                                                   :disabled="scope.$index!=flag">
+                                            <el-option v-for="(class_,index) in classes" :key="index"
+                                                       :label="class_.className"
+                                                       :value="class_.id">
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="学号"
+                                        width="100"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input
+                                                v-model="students[scope.$index].stunum"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="选题状况"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        {{ view2(scope.row.id) }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="所选课题"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        {{ view(scope.row.id) }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        fixed="right"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-button class="myBut" size="small" type="danger" plain
+                                                   @click="del(scope.$index)">删除
+                                        </el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" plain
+                                                   v-show="scope.$index!=flag" @click="update(scope.$index)">修改
+                                        </el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" v-show="scope.$index==flag"
+                                                   @click="updateSave(scope.$index)">保存
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+
+                    <div class='card-footer'>
+                        <el-row>
+                            <el-col :span="4" :offset="6">
+                                <el-pagination
+                                        @current-change="page"
+                                        background
+                                        layout="prev, pager, next"
+                                        :total="total">
+                                </el-pagination>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                </el-card>
+
+            </el-main>
+        </el-container>
+    </el-container>
+
+
+</div>
+
+
+</body>
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.js}"></script>
+
+<script th:inline="javascript">
+
+    var basePath = /*[[${#httpServletRequest.getContextPath()}]]*/'ContextPath';
+
+    var myMap = {
+        set() {
+
+        },
+        get() {
+
+        }
+    };
+
+
+    var app = new Vue({
+        el: "#app",
+        data() {
+            return {
+                url: basePath + "/admin/student",
+                students: [],
+                specialtys: [],
+                classes: [],
+                classes_select: [],
+                specialtyid: '',
+                classid: '',
+                input1: '',
+                total: 1,
+                offset: 1,
+                currentPage: 1,
+                //当前可以修改得表格下标
+                flag: -1,
+                drawer: false,
+                student: {},
+                fileList: [],
+                append: {},
+                loading: false,
+                errorData: [],
+                errorView: false,
+                errorFlag: false,
+                SRS: null,
+                SRSMap: new Map(),
+                subjects: null,
+                subjectsMap: new Map(),
+                stuselectFlag: ['未选题', '选题待审核', '选题未通过', '选题通过'],
+                p: null
+            }
+        },
+        methods: {
+            myMessage(data) {
+                console.log(data);
+                if (data.data.code == 100) {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                } else {
+                    this.$notify({
+                        title: '错误',
+                        dangerouslyUseHTMLString: true,
+                        message: '操作错误：<br>' + data.data.msg,
+                        type: 'error',
+                        position: 'top-right',
+                    });
+                }
+            },
+            errorMsg(error) {
+                if (error.response.status == '401') {
+                    this.$notify({
+                        title: '错误',
+                        dangerouslyUseHTMLString: true,
+                        message: '登录超时',
+                        type: 'error',
+                        position: 'top-right',
+                    });
+                }
+            }
+            ,
+            page(currentPage) {
+                this.loading = true;
+                this.currentPage = currentPage;
+                axios.get(this.url + "s",
+                    {
+                        params: {
+                            offset: this.currentPage,
+                            specialtyId: this.specialtyid,
+                            classId: this.classid,
+                            keyWord: this.input1
+                        }
+                    }
+                ).then((data) => {
+                    this.students = data.data.extend.students;
+                    this.total = data.data.extend.total;
+                }).catch((error) => {
+                    this.errorMsg(error);
+                });
+                this.loading = false;
+            },
+            add() {
+                axios.post(this.url, this.student).then((data) => {
+                    this.myMessage(data);
+                    this.page(1);
+                });
+            },
+            del(index) {
+                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(this.url,
+                        {data: this.students[index]}
+                    ).then((data) => {
+                        this.myMessage(data);
+                        this.page(1);
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
+            update(index) {
+                this.flag = index;
+            },
+            updateSave(index) {
+                this.flag = -1;
+                axios.put(this.url, this.students[index]).then((data) => {
+                    this.myMessage(data);
+                });
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
+            uploadSuccess(response, file, fileList) {
+                console.log(response);
+                if (response.code == 100) {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                    this.page(1);
+
+                } else {
+                    this.$notify({
+                        title: '警告',
+                        dangerouslyUseHTMLString: true,
+                        message:
+                            '总共' + response.extend.countMax +
+                            '<br>导入' + response.extend.count
+                        ,
+                        type: 'error',
+                        position: 'top-right',
+                    });
+                    //存储错误数据
+                    this.errorData = response.extend.errorData;
+                    //显示错误按钮
+                    this.errorView = true;
+                    this.page(1);
+                }
+            },
+            updateClass(id) {
+                axios.get(basePath + "/admin/classes",
+                    {
+                        params: {
+                            "offset": -1,
+                            "specialtyId": id
+                        }
+                    }
+                ).then((data) => {
+                    this.classes_select = data.data.extend.classes;
+                    this.classid = "";
+                });
+            },
+            view(id) {
+                var b = this.SRSMap.get(id);
+                if (b != null)
+                    return this.subjectsMap.get(b.idProject);
+                else {
+                    return "-"
+                }
+            },
+            view2(id) {
+                var b = this.SRSMap.get(id);
+                if (b != null)
+                    return this.stuselectFlag[b.stuselectFlag];
+                else {
+                    return this.stuselectFlag[0];
+                }
+            }
+
+        },
+        create() {
+
+        },
+        mounted() {
+            this.page(1);
+            axios.get(basePath + "/admin/specialtys", {
+                params: {
+                    "offset": -1
+                }
+            }).then((data) => {
+                this.specialtys = data.data.extend.specialtys;
+            });
+            // 用于显示列表里面的班级
+            axios.get(basePath + "/admin/classes", {
+                params: {
+                    "offset": -1
+                }
+            }).then((data) => {
+                this.classes = data.data.extend.classes;
+            });
+            //加载课题
+            axios.get(basePath+"/admin/subjects", {
+                    params: {
+                        "offset": -1
+                    }
+                }
+            ).then((data) => {
+                this.subjects = data.data.extend.subjects;
+                this.subjectsMap = new Map();
+                for (var i = 0; i < this.subjects.length; i++) {
+                    this.subjectsMap.set(this.subjects[i].id, this.subjects[i].projectname);
+                }
+            });
+            //加载学生课题的关系
+            axios.get(basePath+"/admin/SRS"
+            ).then((data) => {
+
+                this.SRS = data.data.extend.SRS;
+                this.SRSMap = new Map();
+                for (var i = 0; i < this.SRS.length; i++) {
+                    this.SRSMap.set(this.SRS[i].idStudent, this.SRS[i]);
+                }
+
+            });
+        }
+    })
+
+</script>
+</html>

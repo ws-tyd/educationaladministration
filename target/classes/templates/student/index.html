@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>毕业设计选题系统</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+
+</head>
+<body>
+<!--<span th:text="session.f"></span>-->
+<div class="wrapper">
+    <!--    引入公共页面 public-student-index.html 的模块-->
+    <div th:replace="student/public-student-index :: header"></div>
+    <div th:replace="student/public-student-index :: left"></div>
+
+
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card" style="width:700px;height:400px;">
+                        <div class="card-header">
+                            <h5 class="card-title">您当前选题状态</h5>
+                        </div>
+                        <div class="card-body">
+                            <font size="3px;">您选择的毕业设计课题：</font>
+                            <font color="red" size="3px;"><span th:text="${projectName}"></span></font></br></br>
+                            <font size="3px;">选题状态：</font>
+                            <font color="red" size="3px;" th:text="${flag}"></font></br></br>
+                            <font size="3px;">课题指导老师：</font>
+                            <font color="red" size="3px;" th:text="${teacher}"></font>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+
+</html>

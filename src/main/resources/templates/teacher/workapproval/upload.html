@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div  th:replace="teacher/public-teacher-index :: header"></div>
+    <div  th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header">
+                            <h5 class="card-title">出差申请</h5>
+                        </div>
+                        <div class="card-body">
+                            <form class="form-horizontal" id="form">
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label"><strong>出差类型</strong>
+                                        <span style="color: #ff0000">*</span>
+                                    </label>
+                                    <div class="col-sm-2">
+                                        <select class="form-control" id="select" name="idType">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><strong>地址信息</strong><span style="color: red">*</span></label>
+                                    <div class="col-sm-6" style="padding: 0px">
+                                        <div class="col-sm-4">
+                                            <select class="form-control" name="province" id="province">
+                                                <option value="请选择">请选择</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" name="city" id="city">
+                                                <option value="请选择">请选择</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" name="town" id="town">
+                                                <option value="请选择">请选择</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label"></label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" rows="3" placeholder="请输入详细地址信息"
+                                                  id="details" name="location"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label"><strong>标题</strong></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="worktitle">
+                                    </div>
+                                </div>
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label"><strong>开始时间</strong><span style="color: red">*</span></label>
+                                    <div class="col-sm-3">
+                                        <input type="date" class="form-control" id="start" name="beginDate">
+                                    </div>
+                                    <label class="col-sm-2 control-label"><strong>结束时间</strong><span style="color: red"s>*</span></label>
+                                    <div class="col-sm-3">
+                                        <input type="date" class="form-control" id="end" name="endDate">
+                                    </div>
+                                </div>
+
+                                <div class="form-group card-header">
+                                    <label class="col-sm-2 control-label"><strong>人数</strong></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="member">
+                                    </div>
+                                </div>
+                                <div class="form-group text-center">
+                                    <button type="button" class="btn btn-primary" id="sub">提交</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script th:src="@{/asserts/js/area.js}"></script>
+<script th:src="@{/asserts/js/select.js}"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        //得到当前时间
+        var date_now = new Date();
+        //得到当前年份
+        var year = date_now.getFullYear();
+        //得到当前月份
+        //注：
+        //  1：js中获取Date中的month时，会比当前月份少一个月，所以这里需要先加一
+        //  2: 判断当前月份是否小于10，如果小于，那么就在月份的前面加一个 '0' ， 如果大于，就显示当前月份
+        var month = date_now.getMonth() + 1 < 10 ? "0" + (date_now.getMonth() + 1) : (date_now.getMonth() + 1);
+        //得到当前日子（多少号）
+        var date = date_now.getDate() < 10 ? "0" + date_now.getDate() : date_now.getDate();
+        //设置input标签的min属性
+        $("#start").attr("min", year + "-" + month + "-" + date);
+
+        $("#end").attr("min", year + "-" + month + "-" + date);
+
+        fun()
+    })
+
+    $("#start").blur(function () {
+        var date = $(this).val()
+        $("#end").attr("min", date);
+    })
+
+    //获取出差类型
+    function fun() {
+        $.ajax({
+            url: "work_type",
+            type: "get",
+            success: function (result) {
+                var workType = result.extend.workInfo;
+                $.each(workType, function (index, item) {
+                    var option = $("<option></option>").attr("value", item.id).append(item.typename)
+                    $("#select").append(option)
+                })
+            }
+        })
+    }
+
+    //提交申请
+    $("#sub").click(function () {
+        var province = $("#province").val()
+        var city = $("#city").val()
+        var town = $("#town").val()
+        var  detail =  $("#details").val()
+        var location = province + city + town + detail
+        $("#details").val(location)
+
+        if($("#start").val() == "" || $("#end").val() == "" ||  $("#details").val().length <= 9){
+            alert("[*]字段不能为空")
+            $("#details").val(detail)
+            // window.location.href = "upload_work_page";
+        }else{
+            $.ajax({
+                url:"upload_work",
+                type:"post",
+                data: $("#form").serializeArray(),
+                contentType: 'application/x-www-form-urlencoded',
+                async: false,
+                cache: false,
+                success:function () {
+                    alert("提交成功")
+                    window.location.href = "upload_work_page";
+                }
+            })
+        }
+
+
+
+    })
+</script>
+</html>

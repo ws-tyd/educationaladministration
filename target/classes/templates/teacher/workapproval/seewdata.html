@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr{
+            height: 50px;
+        }
+
+        table td {
+            text-align: center;
+        }
+        table th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-11">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header">
+                            <h5 class="card-title"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" style="margin-top: 20px">
+                                <table class="table table-bordered table-hover" id="condition_work_table">
+                                    <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>新闻稿</th>
+                                        <th>附件</th>
+                                        <th>填写人</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-6" id="page_info_area"></div>
+                <!-- 分页条信息 -->
+                <div class="col-md-5" id="page_nav_area"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript">
+    function clickBtn() {
+
+        //
+
+        window.open("http://dl.oschina.net/action/soft/download?md5=0a577a15cbd9ec7af37ee288e324965e&soft=1458&t=6f7949a29aa73ee56bebdb44a2591e62a1562d90", "_blank");
+
+    }
+
+    $(function () {
+        to_page(1)
+    })
+
+    function to_page(pn) {
+        $.ajax({
+            url: "select_work_data",
+            data: {
+                pn: pn
+            },
+            async: false,
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                build_table(result)
+
+                build_page_info(result);
+
+                build_page_nav(result)
+            }
+        })
+    }
+
+    function build_table(result) {
+        $("#condition_work_table tbody").empty();
+        var data = result.extend.dataInfo.list;
+        $.each(data, function (index, item) {
+            var id = $("<td></td>").append(item.id);
+            var news = $("<td></td>").append(item.news);
+            var fj = $("<td></td>").append($("<a></a>").attr("href", "file_download?dataId=" +item.id).append("下载附件"));
+            var userName = $("<td></td>").append(item.userName);
+
+
+            $("<tr></tr>")
+                .append(id)
+                .append(news)
+                .append(fj)
+                .append(userName)
+                .appendTo("#condition_work_table tbody");
+        });
+    }
+
+    function build_page_info(result) {
+        $("#page_info_area").empty();
+        $("#page_info_area").append("当前" + result.extend.dataInfo.pageNum + "页,总" +
+            result.extend.dataInfo.pages + "页,总" + result.extend.dataInfo.total + "条记录")
+        totalRecord = result.extend.dataInfo.total;
+        currentPage = result.extend.dataInfo.pageNum;
+    }
+
+    function build_page_nav(result) {
+        //page_nav_area
+        $("#page_nav_area").empty();
+        var ul = $("<ul></ul>").addClass("pagination");
+
+        //构建元素
+        var firstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href", "#"));
+        var prePageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+        if (result.extend.dataInfo.hasPreviousPage == false) {
+            firstPageLi.addClass("disabled");
+            prePageLi.addClass("disabled");
+        } else {
+            //为元素添加点击翻页的事件
+            firstPageLi.click(function () {
+                to_page(0);
+            });
+            prePageLi.click(function () {
+                to_page(result.extend.dataInfo.pageNum - 1);
+            });
+        }
+
+        var nextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
+        var lastPageLi = $("<li></li>").append($("<a></a>").append("末页").attr("href", "#"));
+        if (result.extend.dataInfo.hasNextPage == false) {
+            nextPageLi.addClass("disabled");
+            lastPageLi.addClass("disabled");
+        } else {
+            nextPageLi.click(function () {
+                to_page(result.extend.dataInfo.pageNum + 1);
+            });
+            lastPageLi.click(function () {
+                to_page(result.extend.dataInfo.pages);
+            });
+        }
+
+        //添加首页和前一页 的提示
+        ul.append(firstPageLi).append(prePageLi);
+        //1,2，3遍历给ul中添加页码提示
+        $.each(result.extend.dataInfo.navigatepageNums, function (index, item) {
+
+            var numLi = $("<li></li>").append($("<a></a>").append(item));
+            if (result.extend.dataInfo.pageNum == item) {
+                numLi.addClass("active");
+            }
+            numLi.click(function () {
+                to_page(item);
+            });
+            ul.append(numLi);
+        });
+        //添加下一页和末页 的提示
+        ul.append(nextPageLi).append(lastPageLi);
+
+        //把ul加入到nav
+        var navEle = $("<nav></nav>").append(ul);
+        navEle.appendTo("#page_nav_area");
+    }
+</script>
+</html>

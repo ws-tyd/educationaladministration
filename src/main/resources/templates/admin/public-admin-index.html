@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html style="height: 100%;" lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<!--    <base th:href="@{/}" />   -->
+<!--    可以用来设置项目路径-->
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}">
+    <!-- 引入组件库 -->
+    <script th:src="@{/js/element-ui.js}"></script>
+
+
+    <title>Title</title>
+
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+
+<body style="height: 100%">
+
+<div id="app" v-cloak style="height: 90%">
+
+    <el-menu
+            th:fragment="header"
+            class="el-menu-demo"
+            mode="horizontal"
+            background-color="#545c64"
+            text-color="#fff"
+            active-text-color="#ffd04b">
+        <el-menu-item index="1">
+            <el-link :underline="false" th:href="@{/admin/index}" th:text="${session?.instituteName}">首页</el-link>
+        </el-menu-item>
+
+        <el-submenu index="2" >
+            <template slot="title" th:text="${session?.username}">wo</template>
+            <el-menu-item index="2-1">
+                <el-link style="color: #f1f1f1 ; width: 100%" :underline="false" th:href="@{/admin/updatePwd}">修改</el-link>
+            </el-menu-item>
+            <el-menu-item index="2-2">
+                <el-link style="color: #f1f1f1 ; width: 100%" :underline="false" th:href="@{/admin/exit}">退出</el-link>
+            </el-menu-item>
+        </el-submenu>
+    </el-menu>
+
+
+    <el-container style="height: 100%; border: 1px solid #eee">
+
+        <el-aside th:fragment="left" width="200px" style="background-color: rgb(238, 241, 246)">
+            <el-menu>
+                <el-submenu index="1" th:if="${session.ROLE!='sadmin'}">
+                    <template slot="title"><i class="el-icon-message"></i>院系综合管理</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="1-2">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/SectionManagement}">
+                                教研室管理
+                            </el-link>
+                        </el-menu-item>
+                        <el-menu-item index="1-3">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/SpecialtyManagement}">
+                                专业方向管理
+                            </el-link>
+                        </el-menu-item>
+                        <el-menu-item index="1-4">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/ClassManagement}">
+                                班级管理
+                            </el-link>
+                        </el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+                <el-submenu index="2" th:if="${session.ROLE!='sadmin'}">
+                    <template slot="title"><i class="el-icon-menu"></i>课题综合管理</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="2-1">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/SourceManagement}">
+                                课题来源管理
+                            </el-link>
+                        </el-menu-item>
+                        <el-menu-item index="2-2">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/TypeManagement}">
+                                课题类型管理
+                            </el-link>
+                        </el-menu-item>
+                        <el-menu-item index="2-2">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/SubjectManagement}">
+                                课题管理
+                            </el-link>
+                        </el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+                <el-submenu index="3" th:if="${session.ROLE!='sadmin'}">
+                    <template slot="title"><i class="el-icon-menu"></i>基础信息管理</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="3-1">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/TeacherManagement}">
+                                教师管理
+                            </el-link>
+                        </el-menu-item>
+                        <el-menu-item index="3-2">
+                            <el-link :underline="false"
+                                     th:href="@{/admin/StudentManagement}">
+                                学生管理
+                            </el-link>
+                        </el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+
+                <el-menu-item index="4"
+                              th:if="${session.ROLE=='sadmin'}">
+                    <el-link :underline="false"
+                             th:href="@{/sadmin/CollegeManagement}">
+                        学院管理
+                    </el-link>
+                </el-menu-item>
+
+                <el-menu-item index="5" th:if="${session.ROLE=='sadmin'}">
+                    <el-link :underline="false"
+                             th:href="@{/sadmin/AdminManagement}">
+                        子管理员管理
+                    </el-link>
+                </el-menu-item>
+
+                <el-menu-item index="6" th:if="${session.ROLE!='sadmin'}">
+                    <el-link :underline="false"
+                             th:href="@{/admin/SubjectExcel}">
+                        生成课题一览表
+                    </el-link>
+                </el-menu-item>
+            </el-menu>
+        </el-aside>
+
+        <el-container>
+            <el-main>
+
+                <el-card class="box-card">
+
+                </el-card>
+
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+
+
+
+
+
+</div>
+
+
+</body>
+
+
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+
+<script>
+
+    var app = new Vue({
+        el:"#app"
+    })
+
+    // TODO 首页图表
+    // var colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26a69a', '#D10CE8'];
+    // var options = {
+    //     chart: {
+    //         height: 350,
+    //         type: 'bar',
+    //         events: {
+    //             click: function(chart, w, e) {
+    //                 console.log(chart, w, e )
+    //             }
+    //         },
+    //     },
+    //     colors: colors,
+    //     plotOptions: {
+    //         bar: {
+    //             columnWidth: '45%',
+    //             distributed: true
+    //         }
+    //     },
+    //     dataLabels: {
+    //         enabled: true,
+    //     },
+    //     series: [{
+    //         data: [21, 22, 10, 28, 16, 21, 13, 30]
+    //     }],
+    //     xaxis: {
+    //         categories: ['John', 'Joe', 'Jake', 'Amber', 'Peter', 'Mary', 'David', 'Lily'],
+    //         labels: {
+    //             style: {
+    //                 colors: colors,
+    //                 fontSize: '14px'
+    //             }
+    //         }
+    //     }
+    // }
+    //
+    // var chart = new ApexCharts(
+    //     document.querySelector("#chart1"),
+    //     options
+    // );
+    //
+    // chart.render();
+
+</script>
+</html>

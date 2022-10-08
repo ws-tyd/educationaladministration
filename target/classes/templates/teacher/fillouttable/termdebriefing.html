@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr {
+            height: 40px;
+        }
+
+        table td {
+            text-align: center;
+        }
+
+        table th {
+            text-align: center;
+        }
+
+        input {
+            border: none;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        textarea {
+            border: none;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-12">
+                    <div class="card" style="width:100%;height:100%;">
+                        <div class="card-header text-center">
+                            <h4>
+                                <form class="form-horizontal" style="margin: 0px; padding: 0px">
+                                    <div class="form-group">
+                                        <div class="col-sm-2"></div>
+                                        <span class="col-sm-2 control-label" th:text="${session.teacherInfo.instituteName}"></span>
+                                        <div class="col-sm-2 control-label">
+                                            <select class="form-control" id="year">
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-1 control-label">
+                                            <select class="form-control" id="term">
+                                                <option value="上">上</option>
+                                                <option value="下">下</option>
+                                            </select>
+                                        </div>
+                                        <span class="col-sm-2 control-label">学期述职表</span>
+
+                                    </div>
+                                </form>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th width="200">部门：</th>
+                                    <th width="200" th:text="${session.teacherInfo.instituteName}"></th>
+                                    <th width="200">填报人：</th>
+                                    <th width="300" th:text="${session.teacherInfo.name}"></th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <th>序号</th>
+                                    <th colspan="2">具体内容</th>
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" id="row1">教学任务</td>
+                                    <td>1</td>
+                                    <td colspan="2" class="aa"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td colspan="2" class="aa"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td colspan="2" class="aa"><input type="text"></td>
+                                </tr>
+                                <tr id="a">
+                                    <td colspan="4">
+                                        <button type="button" class="btn btn-primary" id="add1">添加</button>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td rowspan="3" id="row2">科研及成果</td>
+                                    <td>1</td>
+                                    <td colspan="2" class="bb"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td colspan="2" class="bb"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td colspan="2" class="bb"><input type="text"></td>
+                                </tr>
+                                <tr id="b">
+                                    <td colspan="4">
+                                        <button type="button" class="btn btn-primary" id="add2">添加</button>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td rowspan="3" id="row3">其它方面工作</td>
+                                    <td>1</td>
+                                    <td colspan="2" class="cc"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td colspan="2" class="cc"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td colspan="2" class="cc"><input type="text"></td>
+                                </tr>
+                                <tr id="c">
+                                    <td colspan="4">
+                                        <button type="button" class="btn btn-primary" id="add3">添加</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td rowspan="3" id="row4">获奖情况</td>
+                                    <td>1</td>
+                                    <td colspan="2" class="dd"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td colspan="2" class="dd"><input type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td colspan="2" class="dd"><input type="text"></td>
+                                </tr>
+                                <tr id="d">
+                                    <td colspan="4">
+                                        <button type="button" class="btn btn-primary" id="add4">添加</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td rowspan="3">
+                                        工作亮点小结(不超过100字)
+                                    </td>
+                                    <td colspan="3" rowspan="3">
+                                        <textarea rows="4" cols="30" id="summary"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4">
+                                        <button type="button" class="btn btn-default" id="sub">提交</button>
+                                        <button type="button" class="btn btn-default" id="reset">重置</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/teacher/fillouttable/termdebriefing.js}"></script>
+</html>

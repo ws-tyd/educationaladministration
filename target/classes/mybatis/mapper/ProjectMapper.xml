@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.ProjectMapper">
+    <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.Project">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="id_projectType" jdbcType="BIGINT" property="idProjecttype"/>
+        <result column="id_projectSource" jdbcType="BIGINT" property="idProjectsource"/>
+        <result column="id_teacher" jdbcType="BIGINT" property="idTeacher"/>
+        <result column="projectName" jdbcType="VARCHAR" property="projectname"/>
+        <result column="marchSpecialty" jdbcType="VARCHAR" property="marchspecialty"/>
+        <result column="filePath" jdbcType="VARCHAR" property="filepath"/>
+        <result column="teacherNames" jdbcType="VARCHAR" property="teachernames"/>
+        <result column="selectCount" jdbcType="INTEGER" property="selectcount"/>
+        <result column="select_flag" jdbcType="INTEGER" property="selectFlag"/>
+        <result column="verifyProject_flag" jdbcType="INTEGER" property="verifyprojectFlag"/>
+        <result column="release_flag" jdbcType="INTEGER" property="releaseFlag"/>
+        <result column="sourceName" property="sourceName"/>
+        <result column="typeName" property="typeName"/>
+        <result column="userName" property="teacher_name"/>
+        <result column="section_name" property="section_name"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hngy.educationaladministration.entity.ProjectWithBLOBs">
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+        <result column="bak1" jdbcType="LONGVARCHAR" property="bak1"/>
+        <result column="bak2" jdbcType="LONGVARCHAR" property="bak2"/>
+        <result column="bak3" jdbcType="LONGVARCHAR" property="bak3"/>
+        <result column="bak4" jdbcType="LONGVARCHAR" property="bak4"/>
+    </resultMap>
+
+    <select id="selectProjectByName" resultType="com.hngy.educationaladministration.entity.Project">
+        select * from t_project where projectName=#{projectName}
+    </select>
+
+    <!--自建查询-->
+    <select id="select_ProjectXQ" resultMap="BaseResultMap">
+        SELECT
+        t_projectsource.sourceName,
+        t_projecttype.typeName,
+        t_project.id,
+        t_project.projectName,
+        t_project.marchSpecialty,
+        t_project.filePath,
+        t_project.teacherNames,
+        t_project.selectCount,
+        t_project.select_flag,
+        t_project.verifyProject_flag,
+        t_project.release_flag
+        FROM
+        t_project
+        INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+        INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+        INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+        INNER JOIN t_section ON t_teacher.id_section = t_section.id
+        INNER JOIN t_institute ON t_section.id_institute = t_institute.id
+        WHERE t_project.verifyProject_flag=2
+        <if test="institute_id != null and institute_id !=0">
+            and t_institute.id =#{institute_id}
+        </if>
+        <if test="section_id != null and section_id !=0">
+            and t_section.id =#{section_id}
+        </if>
+        <if test="name != null and name !=0">
+            and t_project.id =#{name} or t_project.projectName=#{name} or t_project.teacherNames LIKE '%#{name}%'
+        </if>
+    </select>
+
+    <select id="select_project" resultMap="BaseResultMap">
+        SELECT
+        t_project.id,
+        t_project.id_projectType,
+        t_project.id_projectSource,
+        t_project.id_teacher,
+        t_project.projectName,
+        t_project.marchSpecialty,
+        t_project.filePath,
+        t_project.teacherNames,
+        t_project.selectCount,
+        t_project.select_flag,
+        t_project.verifyProject_flag,
+        t_project.release_flag,
+        t_projectsource.sourceName,
+        t_projecttype.typeName,
+        t_teacher.userName,
+        t_section.section_name
+        FROM
+        t_project
+        INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+        INNER JOIN t_section ON t_teacher.id_section = t_section.id
+        INNER JOIN t_institute ON t_section.id_institute = t_institute.id
+        INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+        INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+        <where>1=1
+            <if test="institute_id != null and institute_id !=0">
+                and t_institute.id =#{institute_id}
+            </if>
+            <if test="section_id != null and section_id !=0">
+                and t_section.id =#{section_id}
+            </if>
+            <if test="section_name != null and section_name !=''">
+                and t_section.section_name =#{section_name}
+            </if>
+            order by CONVERT(section_name using utf8)
+        </where>
+    </select>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, id_projectType, id_projectSource, id_teacher, projectName, marchSpecialty, filePath,
+    teacherNames, selectCount, select_flag, verifyProject_flag, release_flag
+  </sql>
+    <sql id="Blob_Column_List">
+    remark, bak1, bak2, bak3, bak4
+  </sql>
+    <select id="selectByExampleWithBLOBs" parameterType="com.hngy.educationaladministration.entity.ProjectExample" resultMap="ResultMapWithBLOBs">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_project
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.ProjectExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from t_project
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_project
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_project
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.ProjectExample">
+        delete from t_project
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.hngy.educationaladministration.entity.ProjectWithBLOBs">
+    insert into t_project (id, id_projectType, id_projectSource,
+      id_teacher, projectName, marchSpecialty,
+      filePath, teacherNames, selectCount,
+      select_flag, verifyProject_flag, release_flag,
+      remark, bak1, bak2,
+      bak3, bak4)
+    values (#{id,jdbcType=BIGINT}, #{idProjecttype,jdbcType=BIGINT}, #{idProjectsource,jdbcType=BIGINT},
+      #{idTeacher,jdbcType=BIGINT}, #{projectname,jdbcType=VARCHAR}, #{marchspecialty,jdbcType=VARCHAR},
+      #{filepath,jdbcType=VARCHAR}, #{teachernames,jdbcType=VARCHAR}, #{selectcount,jdbcType=INTEGER},
+      #{selectFlag,jdbcType=INTEGER}, #{verifyprojectFlag,jdbcType=INTEGER}, #{releaseFlag,jdbcType=INTEGER},
+      #{remark,jdbcType=LONGVARCHAR}, #{bak1,jdbcType=LONGVARCHAR}, #{bak2,jdbcType=LONGVARCHAR},
+      #{bak3,jdbcType=LONGVARCHAR}, #{bak4,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.ProjectWithBLOBs">
+        insert into t_project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="idProjecttype != null">
+                id_projectType,
+            </if>
+            <if test="idProjectsource != null">
+                id_projectSource,
+            </if>
+            <if test="idTeacher != null">
+                id_teacher,
+            </if>
+            <if test="projectname != null">
+                projectName,
+            </if>
+            <if test="marchspecialty != null">
+                marchSpecialty,
+            </if>
+            <if test="filepath != null">
+                filePath,
+            </if>
+            <if test="teachernames != null">
+                teacherNames,
+            </if>
+            <if test="selectcount != null">
+                selectCount,
+            </if>
+            <if test="selectFlag != null">
+                select_flag,
+            </if>
+            <if test="verifyprojectFlag != null">
+                verifyProject_flag,
+            </if>
+            <if test="releaseFlag != null">
+                release_flag,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="bak1 != null">
+                bak1,
+            </if>
+            <if test="bak2 != null">
+                bak2,
+            </if>
+            <if test="bak3 != null">
+                bak3,
+            </if>
+            <if test="bak4 != null">
+                bak4,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="idProjecttype != null">
+                #{idProjecttype,jdbcType=BIGINT},
+            </if>
+            <if test="idProjectsource != null">
+                #{idProjectsource,jdbcType=BIGINT},
+            </if>
+            <if test="idTeacher != null">
+                #{idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="projectname != null">
+                #{projectname,jdbcType=VARCHAR},
+            </if>
+            <if test="marchspecialty != null">
+                #{marchspecialty,jdbcType=VARCHAR},
+            </if>
+            <if test="filepath != null">
+                #{filepath,jdbcType=VARCHAR},
+            </if>
+            <if test="teachernames != null">
+                #{teachernames,jdbcType=VARCHAR},
+            </if>
+            <if test="selectcount != null">
+                #{selectcount,jdbcType=INTEGER},
+            </if>
+            <if test="selectFlag != null">
+                #{selectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="verifyprojectFlag != null">
+                #{verifyprojectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="releaseFlag != null">
+                #{releaseFlag,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak1 != null">
+                #{bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak2 != null">
+                #{bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak3 != null">
+                #{bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak4 != null">
+                #{bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.ProjectExample" resultType="java.lang.Long">
+        select count(*) from t_project
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_project
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.idProjecttype != null">
+                id_projectType = #{record.idProjecttype,jdbcType=BIGINT},
+            </if>
+            <if test="record.idProjectsource != null">
+                id_projectSource = #{record.idProjectsource,jdbcType=BIGINT},
+            </if>
+            <if test="record.idTeacher != null">
+                id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="record.projectname != null">
+                projectName = #{record.projectname,jdbcType=VARCHAR},
+            </if>
+            <if test="record.marchspecialty != null">
+                marchSpecialty = #{record.marchspecialty,jdbcType=VARCHAR},
+            </if>
+            <if test="record.filepath != null">
+                filePath = #{record.filepath,jdbcType=VARCHAR},
+            </if>
+            <if test="record.teachernames != null">
+                teacherNames = #{record.teachernames,jdbcType=VARCHAR},
+            </if>
+            <if test="record.selectcount != null">
+                selectCount = #{record.selectcount,jdbcType=INTEGER},
+            </if>
+            <if test="record.selectFlag != null">
+                select_flag = #{record.selectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="record.verifyprojectFlag != null">
+                verifyProject_flag = #{record.verifyprojectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="record.releaseFlag != null">
+                release_flag = #{record.releaseFlag,jdbcType=INTEGER},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak1 != null">
+                bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak2 != null">
+                bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak3 != null">
+                bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak4 != null">
+                bak4 = #{record.bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExampleWithBLOBs" parameterType="map">
+        update t_project
+        set id = #{record.id,jdbcType=BIGINT},
+        id_projectType = #{record.idProjecttype,jdbcType=BIGINT},
+        id_projectSource = #{record.idProjectsource,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        projectName = #{record.projectname,jdbcType=VARCHAR},
+        marchSpecialty = #{record.marchspecialty,jdbcType=VARCHAR},
+        filePath = #{record.filepath,jdbcType=VARCHAR},
+        teacherNames = #{record.teachernames,jdbcType=VARCHAR},
+        selectCount = #{record.selectcount,jdbcType=INTEGER},
+        select_flag = #{record.selectFlag,jdbcType=INTEGER},
+        verifyProject_flag = #{record.verifyprojectFlag,jdbcType=INTEGER},
+        release_flag = #{record.releaseFlag,jdbcType=INTEGER},
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+        bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+        bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+        bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+        bak4 = #{record.bak4,jdbcType=LONGVARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_project
+        set id = #{record.id,jdbcType=BIGINT},
+        id_projectType = #{record.idProjecttype,jdbcType=BIGINT},
+        id_projectSource = #{record.idProjectsource,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        projectName = #{record.projectname,jdbcType=VARCHAR},
+        marchSpecialty = #{record.marchspecialty,jdbcType=VARCHAR},
+        filePath = #{record.filepath,jdbcType=VARCHAR},
+        teacherNames = #{record.teachernames,jdbcType=VARCHAR},
+        selectCount = #{record.selectcount,jdbcType=INTEGER},
+        select_flag = #{record.selectFlag,jdbcType=INTEGER},
+        verifyProject_flag = #{record.verifyprojectFlag,jdbcType=INTEGER},
+        release_flag = #{record.releaseFlag,jdbcType=INTEGER}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hngy.educationaladministration.entity.ProjectWithBLOBs">
+        update t_project
+        <set>
+            <if test="idProjecttype != null">
+                id_projectType = #{idProjecttype,jdbcType=BIGINT},
+            </if>
+            <if test="idProjectsource != null">
+                id_projectSource = #{idProjectsource,jdbcType=BIGINT},
+            </if>
+            <if test="idTeacher != null">
+                id_teacher = #{idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="projectname != null">
+                projectName = #{projectname,jdbcType=VARCHAR},
+            </if>
+            <if test="marchspecialty != null">
+                marchSpecialty = #{marchspecialty,jdbcType=VARCHAR},
+            </if>
+            <if test="filepath != null">
+                filePath = #{filepath,jdbcType=VARCHAR},
+            </if>
+            <if test="teachernames != null">
+                teacherNames = #{teachernames,jdbcType=VARCHAR},
+            </if>
+            <if test="selectcount != null">
+                selectCount = #{selectcount,jdbcType=INTEGER},
+            </if>
+            <if test="selectFlag != null">
+                select_flag = #{selectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="verifyprojectFlag != null">
+                verifyProject_flag = #{verifyprojectFlag,jdbcType=INTEGER},
+            </if>
+            <if test="releaseFlag != null">
+                release_flag = #{releaseFlag,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak1 != null">
+                bak1 = #{bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak2 != null">
+                bak2 = #{bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak3 != null">
+                bak3 = #{bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak4 != null">
+                bak4 = #{bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hngy.educationaladministration.entity.ProjectWithBLOBs">
+    update t_project
+    set id_projectType = #{idProjecttype,jdbcType=BIGINT},
+      id_projectSource = #{idProjectsource,jdbcType=BIGINT},
+      id_teacher = #{idTeacher,jdbcType=BIGINT},
+      projectName = #{projectname,jdbcType=VARCHAR},
+      marchSpecialty = #{marchspecialty,jdbcType=VARCHAR},
+      filePath = #{filepath,jdbcType=VARCHAR},
+      teacherNames = #{teachernames,jdbcType=VARCHAR},
+      selectCount = #{selectcount,jdbcType=INTEGER},
+      select_flag = #{selectFlag,jdbcType=INTEGER},
+      verifyProject_flag = #{verifyprojectFlag,jdbcType=INTEGER},
+      release_flag = #{releaseFlag,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=LONGVARCHAR},
+      bak1 = #{bak1,jdbcType=LONGVARCHAR},
+      bak2 = #{bak2,jdbcType=LONGVARCHAR},
+      bak3 = #{bak3,jdbcType=LONGVARCHAR},
+      bak4 = #{bak4,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.hngy.educationaladministration.entity.Project">
+    update t_project
+    set id_projectType = #{idProjecttype,jdbcType=BIGINT},
+      id_projectSource = #{idProjectsource,jdbcType=BIGINT},
+      id_teacher = #{idTeacher,jdbcType=BIGINT},
+      projectName = #{projectname,jdbcType=VARCHAR},
+      marchSpecialty = #{marchspecialty,jdbcType=VARCHAR},
+      filePath = #{filepath,jdbcType=VARCHAR},
+      teacherNames = #{teachernames,jdbcType=VARCHAR},
+      selectCount = #{selectcount,jdbcType=INTEGER},
+      select_flag = #{selectFlag,jdbcType=INTEGER},
+      verifyProject_flag = #{verifyprojectFlag,jdbcType=INTEGER},
+      release_flag = #{releaseFlag,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

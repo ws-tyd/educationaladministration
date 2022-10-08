@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.TechnicalPersonnelMapper">
+    <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.TechnicalPersonnel">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="id_teacher" jdbcType="BIGINT" property="idTeacher"/>
+        <result column="year" jdbcType="VARCHAR" property="year"/>
+        <result column="term" jdbcType="VARCHAR" property="term"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="com.hngy.educationaladministration.entity.TechnicalPersonnelWithBLOBs">
+        <result column="mainAchievements" jdbcType="LONGVARCHAR" property="mainachievements"/>
+        <result column="attendance" jdbcType="LONGVARCHAR" property="attendance"/>
+        <result column="rewardsAndPunishments" jdbcType="LONGVARCHAR" property="rewardsandpunishments"/>
+        <result column="opinionDepartment" jdbcType="LONGVARCHAR" property="opiniondepartment"/>
+        <result column="opinionUnit" jdbcType="LONGVARCHAR" property="opinionunit"/>
+        <result column="opinionOnself" jdbcType="LONGVARCHAR" property="opiniononself"/>
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, id_teacher, year, term
+  </sql>
+    <sql id="Blob_Column_List">
+    mainAchievements, attendance, rewardsAndPunishments, opinionDepartment, opinionUnit, 
+    opinionOnself, remark
+  </sql>
+
+    <!--自建查询-->
+    <select id="selectByYear" resultMap="BaseResultMap">
+    select year  from t_evaluationofspecialandtechnical where id_teacher = #{id_teacher,jdbcType=BIGINT}
+  </select>
+    <select id="selectFlag" parameterType="java.lang.Long" resultType="java.lang.Long">
+    SELECT
+    COUNT(id_teacher)
+    from t_evaluationofspecialandtechnical
+    where id_teacher = #{id_teacher} and year = #{year}
+  </select>
+    <select id="selectByIdTeacherAndYear" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_evaluationofspecialandtechnical
+        where id_teacher = #{id_teacher,jdbcType=BIGINT} and year = #{year, jdbcType=BIGINT}
+
+    </select>
+
+
+    <select id="selectByExampleWithBLOBs"
+            parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_evaluationofspecialandtechnical
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelExample"
+            resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from t_evaluationofspecialandtechnical
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_evaluationofspecialandtechnical
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_evaluationofspecialandtechnical
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelExample">
+        delete from t_evaluationofspecialandtechnical
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelWithBLOBs">
+    insert into t_evaluationofspecialandtechnical (id, id_teacher, year, 
+      term, mainAchievements, attendance, 
+      rewardsAndPunishments, opinionDepartment, 
+      opinionUnit, opinionOnself, remark
+      )
+    values (#{id,jdbcType=BIGINT}, #{idTeacher,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR}, 
+      #{term,jdbcType=VARCHAR}, #{mainachievements,jdbcType=LONGVARCHAR}, #{attendance,jdbcType=LONGVARCHAR}, 
+      #{rewardsandpunishments,jdbcType=LONGVARCHAR}, #{opiniondepartment,jdbcType=LONGVARCHAR}, 
+      #{opinionunit,jdbcType=LONGVARCHAR}, #{opiniononself,jdbcType=LONGVARCHAR}, #{remark,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelWithBLOBs">
+        insert into t_evaluationofspecialandtechnical
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="idTeacher != null">
+                id_teacher,
+            </if>
+            <if test="year != null">
+                year,
+            </if>
+            <if test="term != null">
+                term,
+            </if>
+            <if test="mainachievements != null">
+                mainAchievements,
+            </if>
+            <if test="attendance != null">
+                attendance,
+            </if>
+            <if test="rewardsandpunishments != null">
+                rewardsAndPunishments,
+            </if>
+            <if test="opiniondepartment != null">
+                opinionDepartment,
+            </if>
+            <if test="opinionunit != null">
+                opinionUnit,
+            </if>
+            <if test="opiniononself != null">
+                opinionOnself,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="idTeacher != null">
+                #{idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="year != null">
+                #{year,jdbcType=VARCHAR},
+            </if>
+            <if test="term != null">
+                #{term,jdbcType=VARCHAR},
+            </if>
+            <if test="mainachievements != null">
+                #{mainachievements,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="attendance != null">
+                #{attendance,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="rewardsandpunishments != null">
+                #{rewardsandpunishments,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opiniondepartment != null">
+                #{opiniondepartment,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opinionunit != null">
+                #{opinionunit,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opiniononself != null">
+                #{opiniononself,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelExample"
+            resultType="java.lang.Long">
+        select count(*) from t_evaluationofspecialandtechnical
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_evaluationofspecialandtechnical
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.idTeacher != null">
+                id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="record.year != null">
+                year = #{record.year,jdbcType=VARCHAR},
+            </if>
+            <if test="record.term != null">
+                term = #{record.term,jdbcType=VARCHAR},
+            </if>
+            <if test="record.mainachievements != null">
+                mainAchievements = #{record.mainachievements,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.attendance != null">
+                attendance = #{record.attendance,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.rewardsandpunishments != null">
+                rewardsAndPunishments = #{record.rewardsandpunishments,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.opiniondepartment != null">
+                opinionDepartment = #{record.opiniondepartment,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.opinionunit != null">
+                opinionUnit = #{record.opinionunit,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.opiniononself != null">
+                opinionOnself = #{record.opiniononself,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExampleWithBLOBs" parameterType="map">
+        update t_evaluationofspecialandtechnical
+        set id = #{record.id,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        year = #{record.year,jdbcType=VARCHAR},
+        term = #{record.term,jdbcType=VARCHAR},
+        mainAchievements = #{record.mainachievements,jdbcType=LONGVARCHAR},
+        attendance = #{record.attendance,jdbcType=LONGVARCHAR},
+        rewardsAndPunishments = #{record.rewardsandpunishments,jdbcType=LONGVARCHAR},
+        opinionDepartment = #{record.opiniondepartment,jdbcType=LONGVARCHAR},
+        opinionUnit = #{record.opinionunit,jdbcType=LONGVARCHAR},
+        opinionOnself = #{record.opiniononself,jdbcType=LONGVARCHAR},
+        remark = #{record.remark,jdbcType=LONGVARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_evaluationofspecialandtechnical
+        set id = #{record.id,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        year = #{record.year,jdbcType=VARCHAR},
+        term = #{record.term,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelWithBLOBs">
+        update t_evaluationofspecialandtechnical
+        <set>
+            <if test="idTeacher != null">
+                id_teacher = #{idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="year != null">
+                year = #{year,jdbcType=VARCHAR},
+            </if>
+            <if test="term != null">
+                term = #{term,jdbcType=VARCHAR},
+            </if>
+            <if test="mainachievements != null">
+                mainAchievements = #{mainachievements,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="attendance != null">
+                attendance = #{attendance,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="rewardsandpunishments != null">
+                rewardsAndPunishments = #{rewardsandpunishments,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opiniondepartment != null">
+                opinionDepartment = #{opiniondepartment,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opinionunit != null">
+                opinionUnit = #{opinionunit,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="opiniononself != null">
+                opinionOnself = #{opiniononself,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs"
+            parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnelWithBLOBs">
+    update t_evaluationofspecialandtechnical
+    set id_teacher = #{idTeacher,jdbcType=BIGINT},
+      year = #{year,jdbcType=VARCHAR},
+      term = #{term,jdbcType=VARCHAR},
+      mainAchievements = #{mainachievements,jdbcType=LONGVARCHAR},
+      attendance = #{attendance,jdbcType=LONGVARCHAR},
+      rewardsAndPunishments = #{rewardsandpunishments,jdbcType=LONGVARCHAR},
+      opinionDepartment = #{opiniondepartment,jdbcType=LONGVARCHAR},
+      opinionUnit = #{opinionunit,jdbcType=LONGVARCHAR},
+      opinionOnself = #{opiniononself,jdbcType=LONGVARCHAR},
+      remark = #{remark,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.hngy.educationaladministration.entity.TechnicalPersonnel">
+    update t_evaluationofspecialandtechnical
+    set id_teacher = #{idTeacher,jdbcType=BIGINT},
+      year = #{year,jdbcType=VARCHAR},
+      term = #{term,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>毕业设计选题系统</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <style>
+        th,td{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper panel panel-default">
+    <div th:replace="student/public-student-index :: header"></div>
+    <div th:replace="student/public-student-index :: left"></div>
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="panel panel-default">
+
+                <div class="panel-heading" style="font-size: 19px;">选报课程或查看课题详情请点击课题名</div>
+
+                <table class="table table-bordered table-hover" style="background-color:white">
+                    <tr class="danger">
+                        <th>序号</th>
+                        <th>适用专业</th>
+                        <th>指导教师</th>
+                        <th>课题名</th>
+                        <th>课题类型</th>
+                        <th>课题来源</th>
+                        <th>当前状态</th>
+                    </tr>
+
+                    <tr th:each="list,iterStar : ${topicsinfolist}">
+                        <td th:text="${iterStar.count}"></td>
+                        <td th:text="${list.marchSpecialty}"></td>
+                        <td th:text="${list.teacherNames}"></td>
+                        <td>
+                            <!--<a href="Topicsto?projectName=${project.projectName }"  th:text="${list.projectName}"></a>-->
+                            <a th:href="@{/student/topicsto(project_id=${list.project_id},selectFlag=${list.selectFlag}
+                            ,projectName=${list.projectName})}" style="color: red;"  th:text="${list.projectName}"></a>
+                        </td>
+                        <td th:text="${list.projectType}"></td>
+                        <td th:text="${list.projectSource}"></td>
+                        <td th:if="${list.selectFlag} eq 0">可选</td>
+                        <td th:if="${list.selectFlag} eq 1">已满</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+</html>

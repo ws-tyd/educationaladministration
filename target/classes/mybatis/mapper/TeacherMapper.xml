@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.TeacherMapper">
+    <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.Teacher">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="userName" jdbcType="VARCHAR" property="username"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="pwd" jdbcType="VARCHAR" property="pwd"/>
+        <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="id_section" jdbcType="BIGINT" property="idSection"/>
+        <result column="verify_flag" jdbcType="INTEGER" property="verifyFlag"/>
+        <result column="politicalStatus" jdbcType="VARCHAR" property="politicalstatus"/>
+        <result column="education" jdbcType="VARCHAR" property="education"/>
+        <result column="degree" jdbcType="VARCHAR" property="degree"/>
+        <result column="participationDate" jdbcType="VARCHAR" property="participationdate"/>
+        <result column="administrativeDuty" jdbcType="VARCHAR" property="administrativeduty"/>
+        <result column="technicalPosition" jdbcType="VARCHAR" property="technicalposition"/>
+        <result column="technicalPositionGeted" jdbcType="VARCHAR" property="technicalpositiongeted"/>
+        <result column="duty" jdbcType="VARCHAR" property="duty"/>
+        <result column="IDcardNo" jdbcType="VARCHAR" property="idcardno"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+        <result column="bak1" jdbcType="LONGVARCHAR" property="bak1"/>
+        <result column="bak2" jdbcType="LONGVARCHAR" property="bak2"/>
+        <result column="bak3" jdbcType="LONGVARCHAR" property="bak3"/>
+        <result column="bak4" jdbcType="LONGVARCHAR" property="bak4"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, userName, name, pwd, gender, id_section, verify_flag, politicalStatus, education, 
+    degree, participationDate, administrativeDuty, technicalPosition, technicalPositionGeted, 
+    duty, IDcardNo
+  </sql>
+    <sql id="Blob_Column_List">
+    t_teacher.remark, t_teacher.bak1, t_teacher.bak2, t_teacher.bak3, t_teacher.bak4
+  </sql>
+    <select id="selectByExampleWithBLOBs" parameterType="com.hngy.educationaladministration.entity.TeacherExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null">
+            <if test="offset != null">
+                limit ${offset}, ${rows}
+            </if>
+            <if test="offset == null">
+                limit ${rows}
+            </if>
+        </if>
+    </select>
+    <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.TeacherExample"
+            resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null">
+            <if test="offset != null">
+                limit ${offset}, ${rows}
+            </if>
+            <if test="offset == null">
+                limit ${rows}
+            </if>
+        </if>
+    </select>
+    <select id="selectByExampleSelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+        select
+        <if test="example != null and example.distinct">
+            distinct
+        </if>
+        <choose>
+            <when test="selective != null and selective.length > 0">
+                <foreach collection="selective" item="column" separator=",">
+                    ${column.aliasedEscapedColumnName}
+                </foreach>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List"/>
+                ,
+                <include refid="Blob_Column_List"/>
+            </otherwise>
+        </choose>
+        from t_teacher
+        <if test="example != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+        <if test="example != null and example.orderByClause != null">
+            order by ${example.orderByClause}
+        </if>
+        <if test="example != null and example.rows != null">
+            <if test="example.offset != null">
+                limit ${example.offset}, ${example.rows}
+            </if>
+            <if test="example.offset == null">
+                limit ${example.rows}
+            </if>
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_teacher
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+        select
+        <choose>
+            <when test="selective != null and selective.length > 0">
+                <foreach collection="selective" item="column" separator=",">
+                    ${column.aliasedEscapedColumnName}
+                </foreach>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List"/>
+                ,
+                <include refid="Blob_Column_List"/>
+            </otherwise>
+        </choose>
+        from t_teacher
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_teacher
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.TeacherExample">
+        delete from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+    insert into t_teacher (id, userName, name, 
+      pwd, gender, id_section, 
+      verify_flag, politicalStatus, education, 
+      degree, participationDate, administrativeDuty, 
+      technicalPosition, technicalPositionGeted, 
+      duty, IDcardNo, remark, 
+      bak1, bak2, bak3, 
+      bak4)
+    values (#{id,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{pwd,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{idSection,jdbcType=BIGINT}, 
+      #{verifyFlag,jdbcType=INTEGER}, #{politicalstatus,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, 
+      #{degree,jdbcType=VARCHAR}, #{participationdate,jdbcType=DATE}, #{administrativeduty,jdbcType=VARCHAR}, 
+      #{technicalposition,jdbcType=VARCHAR}, #{technicalpositiongeted,jdbcType=VARCHAR}, 
+      #{duty,jdbcType=VARCHAR}, #{idcardno,jdbcType=VARCHAR}, #{remark,jdbcType=LONGVARCHAR}, 
+      #{bak1,jdbcType=LONGVARCHAR}, #{bak2,jdbcType=LONGVARCHAR}, #{bak3,jdbcType=LONGVARCHAR}, 
+      #{bak4,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+        insert into t_teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                userName,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="pwd != null">
+                pwd,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="idSection != null">
+                id_section,
+            </if>
+            <if test="verifyFlag != null">
+                verify_flag,
+            </if>
+            <if test="politicalstatus != null">
+                politicalStatus,
+            </if>
+            <if test="education != null">
+                education,
+            </if>
+            <if test="degree != null">
+                degree,
+            </if>
+            <if test="participationdate != null">
+                participationDate,
+            </if>
+            <if test="administrativeduty != null">
+                administrativeDuty,
+            </if>
+            <if test="technicalposition != null">
+                technicalPosition,
+            </if>
+            <if test="technicalpositiongeted != null">
+                technicalPositionGeted,
+            </if>
+            <if test="duty != null">
+                duty,
+            </if>
+            <if test="idcardno != null">
+                IDcardNo,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="bak1 != null">
+                bak1,
+            </if>
+            <if test="bak2 != null">
+                bak2,
+            </if>
+            <if test="bak3 != null">
+                bak3,
+            </if>
+            <if test="bak4 != null">
+                bak4,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pwd != null">
+                #{pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="idSection != null">
+                #{idSection,jdbcType=BIGINT},
+            </if>
+            <if test="verifyFlag != null">
+                #{verifyFlag,jdbcType=INTEGER},
+            </if>
+            <if test="politicalstatus != null">
+                #{politicalstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null">
+                #{education,jdbcType=VARCHAR},
+            </if>
+            <if test="degree != null">
+                #{degree,jdbcType=VARCHAR},
+            </if>
+            <if test="participationdate != null">
+                #{participationdate,jdbcType=DATE},
+            </if>
+            <if test="administrativeduty != null">
+                #{administrativeduty,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalposition != null">
+                #{technicalposition,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalpositiongeted != null">
+                #{technicalpositiongeted,jdbcType=VARCHAR},
+            </if>
+            <if test="duty != null">
+                #{duty,jdbcType=VARCHAR},
+            </if>
+            <if test="idcardno != null">
+                #{idcardno,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak1 != null">
+                #{bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak2 != null">
+                #{bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak3 != null">
+                #{bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak4 != null">
+                #{bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.TeacherExample"
+            resultType="java.lang.Long">
+        select count(*) from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_teacher
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.username != null">
+                userName = #{record.username,jdbcType=VARCHAR},
+            </if>
+            <if test="record.name != null">
+                name = #{record.name,jdbcType=VARCHAR},
+            </if>
+            <if test="record.pwd != null">
+                pwd = #{record.pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="record.gender != null">
+                gender = #{record.gender,jdbcType=VARCHAR},
+            </if>
+            <if test="record.idSection != null">
+                id_section = #{record.idSection,jdbcType=BIGINT},
+            </if>
+            <if test="record.verifyFlag != null">
+                verify_flag = #{record.verifyFlag,jdbcType=INTEGER},
+            </if>
+            <if test="record.politicalstatus != null">
+                politicalStatus = #{record.politicalstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="record.education != null">
+                education = #{record.education,jdbcType=VARCHAR},
+            </if>
+            <if test="record.degree != null">
+                degree = #{record.degree,jdbcType=VARCHAR},
+            </if>
+            <if test="record.participationdate != null">
+                participationDate = #{record.participationdate,jdbcType=DATE},
+            </if>
+            <if test="record.administrativeduty != null">
+                administrativeDuty = #{record.administrativeduty,jdbcType=VARCHAR},
+            </if>
+            <if test="record.technicalposition != null">
+                technicalPosition = #{record.technicalposition,jdbcType=VARCHAR},
+            </if>
+            <if test="record.technicalpositiongeted != null">
+                technicalPositionGeted = #{record.technicalpositiongeted,jdbcType=VARCHAR},
+            </if>
+            <if test="record.duty != null">
+                duty = #{record.duty,jdbcType=VARCHAR},
+            </if>
+            <if test="record.idcardno != null">
+                IDcardNo = #{record.idcardno,jdbcType=VARCHAR},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak1 != null">
+                bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak2 != null">
+                bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak3 != null">
+                bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak4 != null">
+                bak4 = #{record.bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExampleWithBLOBs" parameterType="map">
+        update t_teacher
+        set id = #{record.id,jdbcType=BIGINT},
+        userName = #{record.username,jdbcType=VARCHAR},
+        name = #{record.name,jdbcType=VARCHAR},
+        pwd = #{record.pwd,jdbcType=VARCHAR},
+        gender = #{record.gender,jdbcType=VARCHAR},
+        id_section = #{record.idSection,jdbcType=BIGINT},
+        verify_flag = #{record.verifyFlag,jdbcType=INTEGER},
+        politicalStatus = #{record.politicalstatus,jdbcType=VARCHAR},
+        education = #{record.education,jdbcType=VARCHAR},
+        degree = #{record.degree,jdbcType=VARCHAR},
+        participationDate = #{record.participationdate,jdbcType=DATE},
+        administrativeDuty = #{record.administrativeduty,jdbcType=VARCHAR},
+        technicalPosition = #{record.technicalposition,jdbcType=VARCHAR},
+        technicalPositionGeted = #{record.technicalpositiongeted,jdbcType=VARCHAR},
+        duty = #{record.duty,jdbcType=VARCHAR},
+        IDcardNo = #{record.idcardno,jdbcType=VARCHAR},
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+        bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+        bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+        bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+        bak4 = #{record.bak4,jdbcType=LONGVARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_teacher
+        set id = #{record.id,jdbcType=BIGINT},
+        userName = #{record.username,jdbcType=VARCHAR},
+        name = #{record.name,jdbcType=VARCHAR},
+        pwd = #{record.pwd,jdbcType=VARCHAR},
+        gender = #{record.gender,jdbcType=VARCHAR},
+        id_section = #{record.idSection,jdbcType=BIGINT},
+        verify_flag = #{record.verifyFlag,jdbcType=INTEGER},
+        politicalStatus = #{record.politicalstatus,jdbcType=VARCHAR},
+        education = #{record.education,jdbcType=VARCHAR},
+        degree = #{record.degree,jdbcType=VARCHAR},
+        participationDate = #{record.participationdate,jdbcType=DATE},
+        administrativeDuty = #{record.administrativeduty,jdbcType=VARCHAR},
+        technicalPosition = #{record.technicalposition,jdbcType=VARCHAR},
+        technicalPositionGeted = #{record.technicalpositiongeted,jdbcType=VARCHAR},
+        duty = #{record.duty,jdbcType=VARCHAR},
+        IDcardNo = #{record.idcardno,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+        update t_teacher
+        <set>
+            <if test="username != null">
+                userName = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pwd != null">
+                pwd = #{pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="idSection != null">
+                id_section = #{idSection,jdbcType=BIGINT},
+            </if>
+            <if test="verifyFlag != null">
+                verify_flag = #{verifyFlag,jdbcType=INTEGER},
+            </if>
+            <if test="politicalstatus != null">
+                politicalStatus = #{politicalstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null">
+                education = #{education,jdbcType=VARCHAR},
+            </if>
+            <if test="degree != null">
+                degree = #{degree,jdbcType=VARCHAR},
+            </if>
+            <if test="participationdate != null">
+                participationDate = #{participationdate,jdbcType=DATE},
+            </if>
+            <if test="administrativeduty != null">
+                administrativeDuty = #{administrativeduty,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalposition != null">
+                technicalPosition = #{technicalposition,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalpositiongeted != null">
+                technicalPositionGeted = #{technicalpositiongeted,jdbcType=VARCHAR},
+            </if>
+            <if test="duty != null">
+                duty = #{duty,jdbcType=VARCHAR},
+            </if>
+            <if test="idcardno != null">
+                IDcardNo = #{idcardno,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak1 != null">
+                bak1 = #{bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak2 != null">
+                bak2 = #{bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak3 != null">
+                bak3 = #{bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak4 != null">
+                bak4 = #{bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+    update t_teacher
+    set userName = #{username,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      pwd = #{pwd,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      id_section = #{idSection,jdbcType=BIGINT},
+      verify_flag = #{verifyFlag,jdbcType=INTEGER},
+      politicalStatus = #{politicalstatus,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      degree = #{degree,jdbcType=VARCHAR},
+      participationDate = #{participationdate,jdbcType=DATE},
+      administrativeDuty = #{administrativeduty,jdbcType=VARCHAR},
+      technicalPosition = #{technicalposition,jdbcType=VARCHAR},
+      technicalPositionGeted = #{technicalpositiongeted,jdbcType=VARCHAR},
+      duty = #{duty,jdbcType=VARCHAR},
+      IDcardNo = #{idcardno,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=LONGVARCHAR},
+      bak1 = #{bak1,jdbcType=LONGVARCHAR},
+      bak2 = #{bak2,jdbcType=LONGVARCHAR},
+      bak3 = #{bak3,jdbcType=LONGVARCHAR},
+      bak4 = #{bak4,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.hngy.educationaladministration.entity.Teacher">
+    update t_teacher
+    set userName = #{username,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      pwd = #{pwd,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      id_section = #{idSection,jdbcType=BIGINT},
+      verify_flag = #{verifyFlag,jdbcType=INTEGER},
+      politicalStatus = #{politicalstatus,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      degree = #{degree,jdbcType=VARCHAR},
+      participationDate = #{participationdate,jdbcType=DATE},
+      administrativeDuty = #{administrativeduty,jdbcType=VARCHAR},
+      technicalPosition = #{technicalposition,jdbcType=VARCHAR},
+      technicalPositionGeted = #{technicalpositiongeted,jdbcType=VARCHAR},
+      duty = #{duty,jdbcType=VARCHAR},
+      IDcardNo = #{idcardno,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <insert id="batchInsert" parameterType="map">
+        insert into t_teacher
+        (id, userName, name, pwd, gender, id_section, verify_flag, politicalStatus, education,
+        degree, participationDate, administrativeDuty, technicalPosition, technicalPositionGeted,
+        duty, IDcardNo, remark, bak1, bak2, bak3, bak4)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.username,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
+            #{item.pwd,jdbcType=VARCHAR}, #{item.gender,jdbcType=VARCHAR}, #{item.idSection,jdbcType=BIGINT},
+            #{item.verifyFlag,jdbcType=INTEGER}, #{item.politicalstatus,jdbcType=VARCHAR},
+            #{item.education,jdbcType=VARCHAR}, #{item.degree,jdbcType=VARCHAR},
+            #{item.participationdate,jdbcType=DATE},
+            #{item.administrativeduty,jdbcType=VARCHAR}, #{item.technicalposition,jdbcType=VARCHAR},
+            #{item.technicalpositiongeted,jdbcType=VARCHAR}, #{item.duty,jdbcType=VARCHAR},
+            #{item.idcardno,jdbcType=VARCHAR}, #{item.remark,jdbcType=LONGVARCHAR}, #{item.bak1,jdbcType=LONGVARCHAR},
+            #{item.bak2,jdbcType=LONGVARCHAR}, #{item.bak3,jdbcType=LONGVARCHAR}, #{item.bak4,jdbcType=LONGVARCHAR}
+            )
+        </foreach>
+    </insert>
+    <insert id="batchInsertSelective" parameterType="map">
+        insert into t_teacher (
+        <foreach collection="selective" item="column" separator=",">
+            ${column.escapedColumnName}
+        </foreach>
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            <foreach collection="selective" item="column" separator=",">
+                <if test="'id'.toString() == column.value">
+                    #{item.id,jdbcType=BIGINT}
+                </if>
+                <if test="'userName'.toString() == column.value">
+                    #{item.username,jdbcType=VARCHAR}
+                </if>
+                <if test="'name'.toString() == column.value">
+                    #{item.name,jdbcType=VARCHAR}
+                </if>
+                <if test="'pwd'.toString() == column.value">
+                    #{item.pwd,jdbcType=VARCHAR}
+                </if>
+                <if test="'gender'.toString() == column.value">
+                    #{item.gender,jdbcType=VARCHAR}
+                </if>
+                <if test="'id_section'.toString() == column.value">
+                    #{item.idSection,jdbcType=BIGINT}
+                </if>
+                <if test="'verify_flag'.toString() == column.value">
+                    #{item.verifyFlag,jdbcType=INTEGER}
+                </if>
+                <if test="'politicalStatus'.toString() == column.value">
+                    #{item.politicalstatus,jdbcType=VARCHAR}
+                </if>
+                <if test="'education'.toString() == column.value">
+                    #{item.education,jdbcType=VARCHAR}
+                </if>
+                <if test="'degree'.toString() == column.value">
+                    #{item.degree,jdbcType=VARCHAR}
+                </if>
+                <if test="'participationDate'.toString() == column.value">
+                    #{item.participationdate,jdbcType=DATE}
+                </if>
+                <if test="'administrativeDuty'.toString() == column.value">
+                    #{item.administrativeduty,jdbcType=VARCHAR}
+                </if>
+                <if test="'technicalPosition'.toString() == column.value">
+                    #{item.technicalposition,jdbcType=VARCHAR}
+                </if>
+                <if test="'technicalPositionGeted'.toString() == column.value">
+                    #{item.technicalpositiongeted,jdbcType=VARCHAR}
+                </if>
+                <if test="'duty'.toString() == column.value">
+                    #{item.duty,jdbcType=VARCHAR}
+                </if>
+                <if test="'IDcardNo'.toString() == column.value">
+                    #{item.idcardno,jdbcType=VARCHAR}
+                </if>
+                <if test="'remark'.toString() == column.value">
+                    #{item.remark,jdbcType=LONGVARCHAR}
+                </if>
+                <if test="'bak1'.toString() == column.value">
+                    #{item.bak1,jdbcType=LONGVARCHAR}
+                </if>
+                <if test="'bak2'.toString() == column.value">
+                    #{item.bak2,jdbcType=LONGVARCHAR}
+                </if>
+                <if test="'bak3'.toString() == column.value">
+                    #{item.bak3,jdbcType=LONGVARCHAR}
+                </if>
+                <if test="'bak4'.toString() == column.value">
+                    #{item.bak4,jdbcType=LONGVARCHAR}
+                </if>
+            </foreach>
+            )
+        </foreach>
+    </insert>
+    <select id="selectOneByExample" parameterType="com.hngy.educationaladministration.entity.TeacherExample"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        limit 1
+    </select>
+    <select id="selectOneByExampleWithBLOBs" parameterType="com.hngy.educationaladministration.entity.TeacherExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_teacher
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        limit 1
+    </select>
+    <select id="selectOneByExampleSelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+        select
+        <choose>
+            <when test="selective != null and selective.length > 0">
+                <foreach collection="selective" item="column" separator=",">
+                    ${column.aliasedEscapedColumnName}
+                </foreach>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List"/>
+                ,
+                <include refid="Blob_Column_List"/>
+            </otherwise>
+        </choose>
+        from t_teacher
+        <if test="example != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+        <if test="example != null and example.orderByClause != null">
+            order by ${example.orderByClause}
+        </if>
+        limit 1
+    </select>
+
+
+    <resultMap id="teacherInfo" type="com.hngy.educationaladministration.entity.TeacherWithBLOBs">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="userName" jdbcType="VARCHAR" property="username"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="pwd" jdbcType="VARCHAR" property="pwd"/>
+        <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="id_section" jdbcType="BIGINT" property="idSection"/>
+        <result column="verify_flag" jdbcType="INTEGER" property="verifyFlag"/>
+        <result column="politicalStatus" jdbcType="VARCHAR" property="politicalstatus"/>
+        <result column="education" jdbcType="VARCHAR" property="education"/>
+        <result column="degree" jdbcType="VARCHAR" property="degree"/>
+        <result column="participationDate" jdbcType="VARCHAR" property="participationdate"/>
+        <result column="administrativeDuty" jdbcType="VARCHAR" property="administrativeduty"/>
+        <result column="technicalPosition" jdbcType="VARCHAR" property="technicalposition"/>
+        <result column="technicalPositionGeted" jdbcType="VARCHAR" property="technicalpositiongeted"/>
+        <result column="duty" jdbcType="VARCHAR" property="duty"/>
+        <result column="IDcardNo" jdbcType="VARCHAR" property="idcardno"/>
+        <result column="section_name" property="sectionName"/>
+        <result column="institute_name" property="instituteName"/>
+    </resultMap>
+
+    <select id="selectTeacherInfo" parameterType="java.lang.String" resultMap="teacherInfo">
+        select
+        t_teacher.id, t_teacher.userName, t_teacher.name, t_teacher.pwd, t_teacher.gender, t_teacher.id_section,
+        t_teacher.verify_flag, t_teacher.politicalStatus, t_teacher.education,
+        t_teacher.degree, t_teacher.participationDate, t_teacher.administrativeDuty, t_teacher.technicalPosition,
+        t_teacher.technicalPositionGeted, t_teacher.duty, t_teacher.IDcardNo, t_section.section_name,
+        t_institute.institute_name
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_teacher
+        INNER JOIN t_section ON t_teacher.id_section = t_section.id
+        INNER JOIN t_institute ON t_section.id_institute = t_institute.id
+        where userName = #{username}
+    </select>
+
+
+    <resultMap type="com.hngy.educationaladministration.entity.Project" id="list_teacher_section">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="projectName" property="projectname"/>
+        <result column="marchSpecialty" property="marchspecialty"/>
+        <result column="filePath" property="filepath"/>
+        <result column="teacherNames" property="teachernames"/>
+        <result column="selectCount" property="selectcount"/>
+        <result column="select_flag" property="selectFlag"/>
+        <result column="verifyProject_flag" property="verifyprojectFlag"/>
+        <result column="release_flag" property="releaseFlag"/>
+        <result column="sourceName" property="sourceName"/>
+        <result column="typeName" property="typeName"/>
+    </resultMap>
+
+    <select id="selectTeacherFBProject" resultMap="list_teacher_section">
+   SELECT
+t_projectsource.sourceName,
+t_projecttype.typeName,
+t_project.id,
+t_project.projectName,
+t_project.marchSpecialty,
+t_project.filePath,
+t_project.teacherNames,
+t_project.selectCount,
+t_project.select_flag,
+t_project.verifyProject_flag,
+t_project.release_flag
+FROM
+t_project
+INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+WHERE
+t_teacher.name = #{name} and t_project.release_flag='1'
+  </select>
+
+    <select id="selectTeacherProject" resultMap="list_teacher_section">
+        SELECT
+        t_projectsource.sourceName,
+        t_projecttype.typeName,
+        t_project.id,
+        t_project.projectName,
+        t_project.marchSpecialty,
+        t_project.filePath,
+        t_project.teacherNames,
+        t_project.selectCount,
+        t_project.select_flag,
+        t_project.verifyProject_flag,
+        t_project.release_flag
+        FROM
+        t_project
+        INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+        INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+        INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+        WHERE
+        t_teacher.name = #{name}
+    </select>
+
+    <select id="select_allproject" resultMap="list_teacher_section">
+        SELECT
+        t_projectsource.sourceName,
+        t_projecttype.typeName,
+        t_project.id,
+        t_project.projectName,
+        t_project.marchSpecialty,
+        t_project.filePath,
+        t_project.teacherNames,
+        t_project.selectCount,
+        t_project.select_flag,
+        t_project.verifyProject_flag,
+        t_project.release_flag
+        FROM
+        t_project
+        INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+        INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+        INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+        WHERE
+        t_teacher.id_section = #{project_id}
+
+    </select>
+
+    <select id="selecSectionProject" resultMap="list_teacher_section">
+       SELECT
+t_projectsource.sourceName,
+t_projecttype.typeName,
+t_project.id,
+t_project.projectName,
+t_project.marchSpecialty,
+t_project.filePath,
+t_project.teacherNames,
+t_project.selectCount,
+t_project.select_flag,
+t_project.verifyProject_flag,
+t_project.release_flag
+FROM
+t_project
+INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+INNER JOIN t_section ON t_teacher.id_section = t_section.id
+WHERE
+t_section.section_name = #{name}
+    </select>
+
+    <resultMap type="com.hngy.educationaladministration.entity.Project" id="list_teacher_section1">
+        <id column="pid" jdbcType="BIGINT" property="id"/>
+        <result column="projectName" property="projectname"/>
+        <result column="marchSpecialty" property="marchspecialty"/>
+        <result column="filePath" property="filepath"/>
+        <result column="teacherNames" property="teachernames"/>
+        <result column="selectCount" property="selectcount"/>
+        <result column="select_flag" property="selectFlag"/>
+        <result column="verifyProject_flag" property="verifyprojectFlag"/>
+        <result column="release_flag" property="releaseFlag"/>
+        <result column="sourceName" property="sourceName"/>
+        <result column="typeName" property="typeName"/>
+    </resultMap>
+
+    <select id="selectProjectByConditionId" resultMap="list_teacher_section1">
+        select
+	    t_teacher.id as tid,
+		t_projectsource.sourceName,
+        t_projecttype.typeName,
+        t_project.id as pid,
+        t_project.projectName,
+        t_project.marchSpecialty,
+        t_project.filePath,
+        t_project.teacherNames,
+        t_project.selectCount,
+        t_project.select_flag,
+        t_project.verifyProject_flag,
+        t_project.release_flag
+        FROM
+        t_project
+        INNER JOIN t_projectsource ON t_project.id_projectSource = t_projectsource.id
+        INNER JOIN t_projecttype ON t_project.id_projectType = t_projecttype.id
+        INNER JOIN t_teacher ON t_project.id_teacher = t_teacher.id
+        WHERE
+        t_teacher.id_section = #{section_id}
+        <if test="zt != null">
+            and t_project.verifyProject_flag = #{zt}
+        </if>
+        <if test="id_teacher != null">
+            and id_teacher = #{id_teacher}
+        </if>
+  </select>
+    <select id="selectStudentByIds" parameterType="java.util.List" resultType="com.hngy.educationaladministration.entity.Student">
+        select * from t_student where id in
+        <foreach collection="student_ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

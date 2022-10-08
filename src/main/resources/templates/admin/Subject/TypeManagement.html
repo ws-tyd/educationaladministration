@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+    <meta charset="UTF-8">
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+    <!-- 引入组件库 -->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}"/>
+
+    <style>
+        /* 大屏幕 ：大于等于1200px*/
+        @media (min-width: 1200px) {
+        }
+
+        /*默认*/
+        @media (min-width: 980px){
+        }
+
+        /* 平板电脑和小屏电脑之间的分辨率 */
+        @media (min-width: 768px) and (max-width: 480px) {
+            .my-width{
+                width: 300px !important;
+            }
+        }
+
+
+
+        [v-cloak] {
+            display: none !important;
+        }
+    </style>
+
+
+</head>
+<body>
+
+
+<div class="wrapper" id="app" v-cloak>
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="admin/public-admin-index :: header"></div>
+
+    <el-container style="height: 100%; border: 1px solid #eee">
+        <div th:replace="admin/public-admin-index :: left"></div>
+
+
+        <el-container>
+            <el-main>
+                <el-card class="box-card">
+
+                    <div class="card-header" id="addCollege" v-cloak>
+                        <h4 class="text-center" >课题类型
+                            <button class="btn btn-warning pull-right btn-round" @click="drawer = true"> 添加课题类型 </button>
+                        </h4>
+                        <el-drawer
+                                size="30%"
+                                title="添加课题类型"
+                                :visible.sync="drawer"
+                                direction="btt">
+
+                            <div style="margin: 15px;">
+                                <el-input placeholder="输入课题类型名字" v-model="sujecttype.typename" class="input-with-select">
+                                    <el-button slot="append" icon="el-icon-circle-plus" @click="add"></el-button>
+                                </el-input>
+                            </div>
+                        </el-drawer>
+
+                    </div>
+                    <div class="card-body">
+                        <template>
+                            <el-table
+                                    :data="sujecttypes"
+                                    style="width: 100%">
+                                <el-table-column
+                                        label="课题类型"
+                                        width="200"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input style="width: 100%"
+                                                  v-model="sujecttypes[scope.$index].typename"
+                                                  :disabled="scope.$index!=flag"
+                                                  clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        align="center"
+                                        fixed="right">
+                                    <template slot-scope="scope">
+                                        <el-button size="small" type="danger" plain @click="del(scope.$index)">删除</el-button>
+                                        <span></span>
+                                        <el-button size="small" type="primary" plain v-show="scope.$index!=flag" @click="update(scope.$index)">修改</el-button>
+                                        <span></span>
+                                        <el-button size="small" type="primary" v-show="scope.$index==flag" @click="updateSave(scope.$index)">保存</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+
+                    </div>
+
+                </el-card>
+            </el-main>
+        </el-container>
+    </el-container>
+
+</div>
+
+
+</body>
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.js}"></script>
+
+<script th:inline="javascript">
+
+    var basePath= /*[[${#httpServletRequest.getContextPath()}]]*/'ContextPath' ;
+
+    var mytable = new Vue({
+        el:"#app",
+        data(){
+            return{
+                url:basePath+"/admin/sujecttype",
+                sujecttypes:[],
+                sujecttype:{},
+                flag:-1,
+                drawer:false
+            }
+        },
+        methods:{
+            myMessage(data){
+                if(data.data.code==100)
+                {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                }else {
+                    this.$notify({
+                        title: '错误',
+                        dangerouslyUseHTMLString: true,
+                        message: '操作错误：<br>'+data.data.msg,
+                        type:'error',
+                        position: 'top-right',
+                    });
+                }
+            },
+            page(){
+                axios.get(this.url+"s"
+                ).then((data)=>{
+                    this.sujecttypes = data.data.extend.sujecttypes;
+                })
+            },
+            add() {
+                axios.post(this.url,this.sujecttype).then((data)=>{
+                    this.myMessage(data);
+                    this.page();
+                })
+            },
+            del(index){
+                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(this.url,{
+                        data:this.sujecttypes[index]
+                    }).then((data)=>{
+                        this.myMessage(data);
+                        this.page();
+                    });
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
+            update(index){
+                this.flag = index;
+            },
+            updateSave(index){
+                this.flag = -1;
+                axios.put(this.url,this.sujecttypes[index]).then((data)=>{
+                    this.myMessage(data);
+                });
+            }
+        },
+        mounted(){
+            this.page();
+        }
+    });
+
+</script>
+</html>

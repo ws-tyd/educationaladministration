@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+
+    <style>
+        table tr {
+            height: 50px;
+        }
+
+        table td {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        table th {
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="teacher/public-teacher-index :: header"></div>
+    <div th:replace="teacher/public-teacher-index :: left"></div>
+
+
+    <div class="main-panel">
+        <div class="content">
+            <div class="row">
+                <div class="col-md-5"></div>
+                <form class="form-inline">
+                    <div class="form-group text-center">
+                        <input type="text" class="form-control" id="userName" placeholder="按登录名查找">
+                    </div>
+                    <button type="button" class="btn btn-default" id="btn">搜索</button>
+                </form>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <table class="table" style="background-color:white;">
+                        <tr style="background-color:#00ffff">
+                            <th>院系</th>
+                            <th>专业</th>
+                            <th>班级</th>
+                            <th>学号</th>
+                            <th>姓名</th>
+                            <th>重置密码</th>
+                        </tr>
+
+                        <tr th:each="s: ${Students}">
+                            <td th:text="${s.institute_name}"></td>
+                            <td th:text="${s.specialty_name}"></td>
+                            <td th:text="${s.class_name}"></td>
+                            <td th:text="${s.stuNum}"></td>
+                            <td th:text="${s.name}"></td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" th:onclick="studAjax([[${s.stuNum}]]);" >重置</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript">
+    $("#btn").click(function () {
+        var username = $("#userName").val()
+        window.location.href="/edumanagement/static/selectStudent?username="+username;
+    })
+
+    function studAjax(username) {
+        //用户账号登入判断
+        $.ajax({
+            url: "czpwd",
+            type: "POST",
+            async: false,
+            data: {"username":username},
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            success: function (PD) {
+                if (PD.pd == 0) {
+                    alert("重置失败");
+                } else if (PD.pd == 1) {
+                    alert("重置成功");
+                    window.location.href = "czstudentpwd";
+                }
+            },
+            error: function (data) {
+                alert("失败");
+            }
+        })
+    }
+</script>
+</html>

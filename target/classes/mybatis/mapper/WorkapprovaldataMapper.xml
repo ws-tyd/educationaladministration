@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.WorkapprovaldataMapper">
+    <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.Workapprovaldata">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="id_workapproval" jdbcType="BIGINT" property="idWorkapproval"/>
+        <result column="news" jdbcType="VARCHAR" property="news"/>
+        <result column="dataRar" jdbcType="VARCHAR" property="datarar"/>
+        <result column="flag" jdbcType="INTEGER" property="flag"/>
+        <result column="workTitle" jdbcType="VARCHAR" property="workTitle"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="com.hngy.educationaladministration.entity.Workapprovaldata">
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    t_workapprovaldata.id,
+	t_workapprovaldata.id_workapproval,
+	t_workapprovaldata.news,
+	t_workapprovaldata.dataRar,
+	t_workapprovaldata.flag,
+	t_workapproval.workTitle,
+	t_teacher.userName
+  </sql>
+    <sql id="Blob_Column_List">
+    t_workapprovaldata.remark
+  </sql>
+
+    <!--自建-->
+    <select id="selectSection" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapprovaldata
+        inner join t_workapproval on t_workapprovaldata.id_workapproval = t_workapproval.id
+        inner join t_teacher on t_workapproval.id_teacher = t_teacher.id
+        where
+        t_teacher.id_section = #{section_id} and t_workapprovaldata.flag = 0
+    </select>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapprovaldata
+        inner join t_workapproval on t_workapprovaldata.id_workapproval = t_workapproval.id
+        inner join t_teacher on t_workapproval.id_teacher = t_teacher.id
+        where
+        t_workapprovaldata.id = #{id}
+    </select>
+
+
+    <select id="selectByExampleWithBLOBs"
+            parameterType="com.hngy.educationaladministration.entity.WorkapprovaldataExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapprovaldata
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovaldataExample"
+            resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from t_workapprovaldata
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovaldataExample">
+        delete from t_workapprovaldata
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.hngy.educationaladministration.entity.Workapprovaldata">
+    insert into t_workapprovaldata (id, id_workapproval, news, 
+      dataRar, flag, remark
+      )
+    values (#{id,jdbcType=BIGINT}, #{idWorkapproval,jdbcType=BIGINT}, #{news,jdbcType=VARCHAR}, 
+      #{datarar,jdbcType=VARCHAR}, #{flag,jdbcType=INTEGER}, #{remark,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.Workapprovaldata">
+        insert into t_workapprovaldata
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="idWorkapproval != null">
+                id_workapproval,
+            </if>
+            <if test="news != null">
+                news,
+            </if>
+            <if test="datarar != null">
+                dataRar,
+            </if>
+            <if test="flag != null">
+                flag,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="idWorkapproval != null">
+                #{idWorkapproval,jdbcType=BIGINT},
+            </if>
+            <if test="news != null">
+                #{news,jdbcType=VARCHAR},
+            </if>
+            <if test="datarar != null">
+                #{datarar,jdbcType=VARCHAR},
+            </if>
+            <if test="flag != null">
+                #{flag,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovaldataExample"
+            resultType="java.lang.Long">
+        select count(*) from t_workapprovaldata
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_workapprovaldata
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.idWorkapproval != null">
+                id_workapproval = #{record.idWorkapproval,jdbcType=BIGINT},
+            </if>
+            <if test="record.news != null">
+                news = #{record.news,jdbcType=VARCHAR},
+            </if>
+            <if test="record.datarar != null">
+                dataRar = #{record.datarar,jdbcType=VARCHAR},
+            </if>
+            <if test="record.flag != null">
+                flag = #{record.flag,jdbcType=INTEGER},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExampleWithBLOBs" parameterType="map">
+        update t_workapprovaldata
+        set id = #{record.id,jdbcType=BIGINT},
+        id_workapproval = #{record.idWorkapproval,jdbcType=BIGINT},
+        news = #{record.news,jdbcType=VARCHAR},
+        dataRar = #{record.datarar,jdbcType=VARCHAR},
+        flag = #{record.flag,jdbcType=INTEGER},
+        remark = #{record.remark,jdbcType=LONGVARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_workapprovaldata
+        set id = #{record.id,jdbcType=BIGINT},
+        id_workapproval = #{record.idWorkapproval,jdbcType=BIGINT},
+        news = #{record.news,jdbcType=VARCHAR},
+        dataRar = #{record.datarar,jdbcType=VARCHAR},
+        flag = #{record.flag,jdbcType=INTEGER}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+</mapper>

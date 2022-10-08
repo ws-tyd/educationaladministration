@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hngy.educationaladministration.mapper.SubjectMapper">
+
+    <resultMap type="com.hngy.educationaladministration.entity.Subject" id="Tproject">
+        <id property="id" column="id"/>
+        <result property="idProjecttype" column="id_projectType"/>
+        <result property="idProjectsource" column="id_projectSource"/>
+        <result property="idTeacher" column="id_teacher"/>
+        <result property="projectname" column="projectName"/>
+        <result property="marchspecialty" column="marchSpecialty"/>
+        <result property="filepath" column="filePath"/>
+        <result property="teachernames" column="teacherNames"/>
+        <result property="selectcount" column="selectCount"/>
+        <result property="selectFlag" column="select_flag"/>
+        <result property="verifyprojectFlag" column="verifyProject_flag"/>
+        <result property="releaseFlag" column="release_flag"/>
+        <!--id,class_name as className,id_specialty as idSpecialty-->
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="Tproject">
+        select * from t_project where id = #{id}
+    </select>
+
+    <select id="selectByAll" parameterType="String" resultMap="Tproject">
+        select * from t_project where release_flag = 1 and marchSpecialty like '%${specialty}%'
+    </select>
+
+    <select id="selectByprojectType" parameterType="int" resultType="String">
+        select typeName from t_projecttype where id = #{id}
+    </select>
+
+    <select id="selectByprojectSource" parameterType="int" resultType="String">
+        select sourceName from t_projectsource where id = #{id}
+    </select>
+
+    <select id="selectByclassName" parameterType="String" resultType="Long">
+        select id from t_project where projectname = #{projectName}
+    </select>
+
+    <select id="selectByprojectid" parameterType="String" resultType="Long">
+      select id from t_project where projectname = #{projectName};
+    </select>
+
+    <select id="selectByselectFlag" parameterType="Long" resultType="Long">
+      select select_flag from t_project where id = #{id};
+    </select>
+
+    <select id="selectBystudentidprojectName" parameterType="Long" resultType="com.hngy.educationaladministration.entity.Subject">
+      select * from t_project
+      INNER JOIN t_projectselected ON t_projectselected.id_project = t_project.id
+      where t_projectselected.id_student=#{id}
+    </select>
+</mapper>

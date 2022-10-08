@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <!--    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">-->
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+    <!--     引入组件库-->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}"/>
+
+    <title>教务综合管理系统</title>
+    <style>
+
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .el-select .el-input {
+
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .myfrom .mychild {
+            margin: 5px;
+        }
+
+        input[type=file] {
+            display: none;
+        }
+
+        .myBut {
+            margin-top: 2px;
+        }
+
+        .MyGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 33.3%);
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="wrapper" id="app" v-cloak>
+
+    <el-dialog title="未导入教师" :visible.sync="errorFlag">
+        <el-table :data="errorData">
+            <el-table-column property="username" label="用户名"></el-table-column>
+            <el-table-column property="gender" label="错误原因"></el-table-column>
+        </el-table>
+    </el-dialog>
+
+    <!--    引入公共页面 public-index。html 的模块-->
+    <div th:replace="admin/public-admin-index :: header"></div>
+
+    <el-container style="height: 100%; border: 1px solid #eee">
+        <div th:replace="admin/public-admin-index :: left"></div>
+
+
+        <el-container>
+            <el-main>
+
+                <el-card class="box-card">
+
+                    <div class="card-header">
+
+                        <div class="MyGrid">
+                            <div>
+                                <el-select v-model="select" slot="prepend" placeholder="请选择教研室" style="width: 100%">
+                                    <el-option v-for="(section,index) in sections" :key="index"
+                                               :label="section.sectionName" :value="section.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div>
+                                <el-input placeholder="请输入教师名字or登录名" v-model="input" style="width: 100%"></el-input>
+                            </div>
+                            <div>
+                                <el-button-group style="width: 100%">
+                                    <el-button icon="el-icon-search" @click="page(1)"></el-button>
+                                    <el-button icon="el-icon-delete" @click="input=select=null"></el-button>
+                                </el-button-group>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h4 class="text-center">
+                            教师管理
+                            <button class="btn btn-warning pull-right btn-round" @click="drawer = true"> 添加教师</button>
+                        </h4>
+
+
+                        <el-drawer
+                                class="myfrom"
+                                size="75%"
+                                title="添加教师"
+                                :visible.sync="drawer"
+                                direction="btt">
+
+                            <el-row class="tac">
+                                <el-col :span="14">
+                                    <el-card style="margin: 0 0 25px 5px ; display: inline-block">
+                                        <templeate>
+                                            <el-select class="mychild" v-model="teacher.idSection" slot="prepend"
+                                                       placeholder="请选择教研室">
+                                                <el-option v-for="(section,index) in sections" :key="index"
+                                                           :label="section.sectionName" :value="section.id"></el-option>
+                                            </el-select>
+                                        </templeate>
+                                        <el-input class="mychild" placeholder="请输入账号"
+                                                  v-model="teacher.username"></el-input>
+                                        <el-input class="mychild" placeholder="请输入密码" v-model="teacher.pwd"></el-input>
+                                        <el-input class="mychild" placeholder="请输入教师名字"
+                                                  v-model="teacher.name"></el-input>
+
+                                        <el-radio-group class="mychild" v-model="teacher.gender">
+                                            <el-radio label="男"></el-radio>
+                                            <el-radio label="女"></el-radio>
+                                        </el-radio-group>
+                                        <br>
+                                        <el-radio-group class="mychild" v-model="teacher.verifyFlag">
+                                            <el-radio label="1">审核员</el-radio>
+                                            <el-radio label="0">教师</el-radio>
+                                        </el-radio-group>
+                                        <br>
+                                        <el-button class="mychild" type="primary" @click="add"
+                                                   style="margin: 0 auto ; width: 100px">立即创建
+                                        </el-button>
+                                    </el-card>
+                                </el-col>
+                                <!--                                                    name="excel"-->
+                                <el-col :span="10">
+                                    <el-card style="margin: 0 0 25px 5px ; display: inline-block">
+                                        <el-upload
+                                                class="upload-demo"
+                                                ref="upload"
+                                                name="excel"
+                                                :on-success="uploadSuccess"
+                                                accept='.xls,.xlsx'
+                                                th:action="@{/admin/TeacherExcel}"
+                                                :on-preview="handlePreview"
+                                                :on-remove="handleRemove"
+                                                :file-list="fileList"
+                                                :auto-upload="false">
+                                            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                            <el-button style="" size="small" type="success" @click="submitUpload">
+                                                上传到服务器
+                                            </el-button>
+                                            <div slot="tip" class="el-upload__tip">只能上传excel文件.</div>
+                                        </el-upload>
+                                        <el-divider> tips</el-divider>
+                                        <div>
+                                            <el-link type="primary" th:href="@{/admin/TeacherExcelDemo}">模板下载</el-link>
+                                            <el-button v-if="errorView" type="warning" @click="errorFlag = true">
+                                                显示导入失败名单
+                                            </el-button>
+                                        </div>
+
+                                    </el-card>
+                                </el-col>
+                            </el-row>
+
+                        </el-drawer>
+
+                    </div>
+                    <div class="card-body">
+
+                        <template>
+                            <el-table
+                                    :data="teachers"
+                                    style="width: 100%">
+                                <el-table-column
+                                        label="姓名"
+                                        width="120"
+                                        fixed
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input
+                                                v-model="teachers[scope.$index].name"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="登录名"
+                                        width="200"
+                                        align="center"
+                                        prop="username">
+                                </el-table-column>
+                                <el-table-column
+                                        label="密码"
+                                        width="150"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-input
+                                                v-model="teachers[scope.$index].pwd"
+                                                :disabled="scope.$index!=flag"
+                                                clearable>
+                                        </el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="教研室"
+                                        width="200"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select style="width: 100%" v-model="teachers[scope.$index].idSection" slot="prepend"
+                                                   :disabled="scope.$index!=flag">
+                                            <el-option v-for="(section,index) in sections" :key="index"
+                                                       :label="section.sectionName"
+                                                       :value="section.id"
+                                            >
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="身份"
+                                        width="120"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-select v-model="teachers[scope.$index].verifyFlag" slot="prepend"
+                                                   :disabled="scope.$index!=flag">
+                                            <el-option v-for="(i,index) in identity" :key="index"
+                                                       :label="i"
+                                                       :value="index"
+                                            >
+                                            </el-option>
+                                        </el-select>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        fixed="right"
+                                        align="center">
+                                    <template slot-scope="scope">
+                                        <el-button class="myBut" size="small" type="danger" plain
+                                                   @click="del(scope.$index)">删除
+                                        </el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" plain
+                                                   v-show="scope.$index!=flag" @click="update(scope.$index)">修改
+                                        </el-button>
+                                        <span></span>
+                                        <el-button class="myBut" size="small" type="primary" v-show="scope.$index==flag"
+                                                   @click="updateSave(scope.$index)">保存
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+
+                    <div class='card-footer'>
+                        <el-row>
+                            <el-col :span="4" :offset="6">
+                                <el-pagination
+                                        @current-change="page"
+                                        background
+                                        layout="prev, pager, next"
+                                        :total="total">
+                                </el-pagination>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                </el-card>
+            </el-main>
+        </el-container>
+    </el-container>
+
+</div>
+
+
+</body>
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.js}"></script>
+
+<script th:inline="javascript">
+
+    var basePath = /*[[${#httpServletRequest.getContextPath()}]]*/'ContextPath';
+
+    var app = new Vue({
+        el: "#app",
+        data() {
+            return {
+                url: basePath + "/admin/teacher",
+                teachers: [],
+                sections: [],
+                select: '',
+                input: '',
+                total: 1,
+                offset: 1,
+                currentPage: 1,
+                //当前可以修改得表格下标
+                flag: -1,
+                drawer: false,
+                teacher: {},
+                identity: ["教师", "审核员"],
+                fileList: [],
+                errorView: false,
+                errorFlag: false,
+                errorData: []
+            }
+        },
+        methods: {
+            myMessage(data) {
+                if (data.data.code == 100) {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                } else {
+                    this.$notify({
+                        title: '错误',
+                        dangerouslyUseHTMLString: true,
+                        message: '操作错误：<br>' + data.data.msg,
+                        type: 'error',
+                        position: 'top-right',
+                    });
+                }
+            },
+            page(currentPage) {
+                this.currentPage = currentPage;
+                axios.get(this.url + "s", {
+                        params: {
+                            "offset": this.currentPage,
+                            "keyWord": this.input,
+                            "sectionId": this.select
+                        }
+                    }
+                ).then((data) => {
+                    this.teachers = data.data.extend.teachers;
+                    this.total = data.data.extend.total;
+                    // this.input1='';
+                    // this.select='';
+                });
+            },
+            add() {
+                axios.post(this.url, this.teacher).then((data) => {
+                    this.myMessage(data);
+                    this.page(1)
+                });
+            },
+            del(index) {
+                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(this.url,
+                        {data: this.teachers[index]}
+                    ).then((data) => {
+                        this.myMessage(data);
+                        this.page(1);
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
+            update(index) {
+                this.flag = index;
+            },
+            updateSave(index) {
+                this.flag = -1;
+                axios.put(this.url, this.teachers[index]).then((data) => {
+                    this.myMessage(data);
+                });
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
+            uploadSuccess(response, file, fileList) {
+                if (response.code == 100) {
+                    this.$notify({
+                        title: '成功',
+                        message: '操作成功',
+                        type: 'success',
+                        position: 'top-right',
+                    });
+                    this.page(1);
+
+                } else {
+                    this.$notify({
+                        title: '警告',
+                        dangerouslyUseHTMLString: true,
+                        message:
+                            '总共' + response.extend.countMax +
+                            '<br>导入' + response.extend.count
+                        ,
+                        type: 'error',
+                        position: 'top-right',
+                    });
+                    //存储错误数据
+                    this.errorData = response.extend.errorData;
+                    //显示错误按钮
+                    this.errorView = true;
+                    this.page(1);
+                }
+            }
+
+        },
+        create() {
+
+        },
+        mounted() {
+            this.page(1);
+            axios.get(basePath + "/admin/sections").then((data) => {
+                this.sections = data.data.extend.sections;
+            });
+        }
+    })
+
+</script>
+</html>

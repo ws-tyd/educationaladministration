@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+</head>
+<body>
+<!--    引入公共页面 public-index。html 的模块-->
+<div th:replace="teacher/public-teacher-index :: header"></div>
+<div th:replace="teacher/public-teacher-index :: left"></div>
+
+<div class="main-panel">
+    <div class="content">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="card" style="width:100%;height:100%;">
+                    <div class="card-header">
+                        <h5 class="card-title">个人信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <form class="form-horizontal" id="infoform">
+                            <div class="form-group card-header">
+                                <label class="col-sm-2 control-label">姓名</label>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" th:value="${session.teacherInfo.name}" name="name">
+                                </div>
+                            </div>
+                            <div class="form-group card-header">
+                                <label class="col-sm-2 control-label">性别</label>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="genderSelect">
+                                        <option th:selected="${session.teacherInfo.gender} eq '男' " value="男">男</option>
+                                        <option th:selected="${session.teacherInfo.gender} eq '女' " value="女">女</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group card-header">
+                                <label class="col-sm-2 control-label">身份证(登入名)</label>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" th:value="${session.teacherInfo.username}" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group card-header text-center">
+                                <button type="button" class="btn btn-primary" id="sub">确认修改</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript">
+    $("#sub").click(function () {
+        let dataForm = $("#infoform").serializeArray()
+        let gender = getGender("genderSelect")
+        dataForm.push({"name": "gender","value": gender});
+        $.ajax({
+            url: "teacherupdeteinfo",
+            type: "post",
+            async: false,
+            data: dataForm,
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            success: function (result) {
+                alert("修改成功")
+                window.location.href="modifyinfo";
+            }
+        })
+    })
+
+    function getGender(elementName) {
+        let genderDom = document.getElementById(elementName)
+
+        return genderDom.options[genderDom.selectedIndex].value;
+    }
+</script>
+</html>

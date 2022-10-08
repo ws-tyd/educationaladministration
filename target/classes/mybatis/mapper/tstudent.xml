@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hngy.educationaladministration.mapper.StudentMapper">
+
+    <resultMap type="com.hngy.educationaladministration.entity.Student" id="Tstudent">
+        <id property="id" column="id"/>
+        <result property="username" column="userName"/>
+        <result property="stunum" column="stuNum"/>
+        <result property="idClass" column="id_class"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="pwd" column="pwd"/>
+        <!--id,class_name as className,id_specialty as idSpecialty-->
+    </resultMap>
+
+    <select id="selectByName" parameterType="String" resultMap="Tstudent">
+        select * from t_student where userName = #{username}
+    </select>
+
+    <select id="selectByid" parameterType="Long" resultMap="Tstudent">
+      select * from t_student where id = #{id}
+    </select>
+
+    <select id="selectByListAll" parameterType="Long" resultMap="Tstudent">
+      select * from t_student where id_class = #{id}
+    </select>
+
+    <update id="updateBymodifyinfo">
+        update t_student
+        <set>
+            <if test="stunum != null">stuNum = #{stunum},</if>
+            <if test="idClass != null">id_class = #{idClass},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender}</if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

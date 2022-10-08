@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hngy.educationaladministration.mapper.WorkapprovalMapper">
+    <resultMap id="BaseResultMap" type="com.hngy.educationaladministration.entity.Workapproval">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="id_type" jdbcType="BIGINT" property="idType"/>
+        <result column="id_teacher" jdbcType="BIGINT" property="idTeacher"/>
+        <result column="workTitle" jdbcType="VARCHAR" property="worktitle"/>
+        <result column="begin_date" jdbcType="DATE" property="beginDate"/>
+        <result column="end_date" jdbcType="DATE" property="endDate"/>
+        <result column="location" jdbcType="VARCHAR" property="location"/>
+        <result column="member" jdbcType="VARCHAR" property="member"/>
+        <result column="appovalFlag" jdbcType="INTEGER" property="appovalflag"/>
+        <result column="sumbitDate" jdbcType="DATE" property="sumbitdate"/>
+        <result column="appovalDate" jdbcType="DATE" property="appovaldate"/>
+        <result column="id_subAdmin" jdbcType="BIGINT" property="idSubadmin"/>
+        <result column="typeName" jdbcType="VARCHAR" property="typeName"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="com.hngy.educationaladministration.entity.WorkapprovalWithBLOBs">
+        <result column="workContent" jdbcType="LONGVARCHAR" property="workcontent"/>
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+        <result column="bak1" jdbcType="LONGVARCHAR" property="bak1"/>
+        <result column="bak2" jdbcType="LONGVARCHAR" property="bak2"/>
+        <result column="bak3" jdbcType="LONGVARCHAR" property="bak3"/>
+        <result column="bak4" jdbcType="LONGVARCHAR" property="bak4"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    t_workapproval.id, t_workapproval.id_type, t_workapproval.id_teacher, t_workapproval.workTitle, t_workapproval.begin_date,
+    t_workapproval.end_date, t_workapproval.location, t_workapproval.member, t_workapproval.appovalFlag,
+    t_workapproval.sumbitDate, t_workapproval.appovalDate, t_workapproval.id_subAdmin, t_workapprovaltype.typeName, t_teacher.userName
+  </sql>
+    <sql id="Blob_Column_List">
+    t_workapproval.workContent, t_workapproval.remark, t_workapproval.bak1, t_workapproval.bak2, t_workapproval.bak3, t_workapproval.bak4
+  </sql>
+
+    <!--自建-->
+    <select id="selectByApprovalFlag" parameterType="com.hngy.educationaladministration.entity.WorkapprovalExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapproval
+        INNER JOIN t_workapprovaltype on t_workapproval.id_type = t_workapprovaltype.id
+        INNER JOIN t_teacher on t_workapproval.id_teacher = t_teacher.id
+        where t_workapproval.id_teacher = #{id_teacher} and t_workapproval.appovalFlag = #{appovalFlag}
+    </select>
+    <select id="selectSectionWork" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select t_workapproval.id, t_workapproval.id_type, t_workapproval.id_teacher, t_workapproval.workTitle, t_workapproval.begin_date,
+        t_workapproval.end_date, t_workapproval.location, t_workapproval.member, t_workapproval.appovalFlag,
+        t_workapproval.sumbitDate, t_workapproval.appovalDate, t_workapproval.id_subAdmin, t_workapprovaltype.typeName,t_teacher.userName
+        from t_workapproval
+        INNER JOIN t_teacher ON t_workapproval.id_teacher = t_teacher.id
+        INNER JOIN t_workapprovaltype on t_workapproval.id_type = t_workapprovaltype.id
+        WHERE
+        t_teacher.id_section = #{section_id}
+    </select>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapproval
+        INNER JOIN t_workapprovaltype on t_workapproval.id_type = t_workapprovaltype.id
+        INNER JOIN t_teacher on t_workapproval.id_teacher = t_teacher.id
+        where t_workapproval.id = #{id}
+    </select>
+
+
+
+    <select id="selectByExampleWithBLOBs" parameterType="com.hngy.educationaladministration.entity.WorkapprovalExample"
+            resultMap="ResultMapWithBLOBs">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from t_workapproval
+        INNER JOIN t_workapprovaltype on t_workapproval.id_type = t_workapprovaltype.id
+        INNER JOIN t_teacher on t_workapproval.id_teacher = t_teacher.id
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovalExample"
+            resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from t_workapproval
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <delete id="deleteByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovalExample">
+        delete from t_workapproval
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.hngy.educationaladministration.entity.WorkapprovalWithBLOBs">
+    insert into t_workapproval (id, id_type, id_teacher, 
+      workTitle, begin_date, end_date, 
+      location, member, appovalFlag, 
+      sumbitDate, appovalDate, id_subAdmin, 
+      workContent, remark, bak1, 
+      bak2, bak3, bak4
+      )
+    values (#{id,jdbcType=BIGINT}, #{idType,jdbcType=BIGINT}, #{idTeacher,jdbcType=BIGINT}, 
+      #{worktitle,jdbcType=VARCHAR}, #{beginDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{location,jdbcType=VARCHAR}, #{member,jdbcType=VARCHAR}, #{appovalflag,jdbcType=INTEGER}, 
+      #{sumbitdate,jdbcType=DATE}, #{appovaldate,jdbcType=DATE}, #{idSubadmin,jdbcType=BIGINT}, 
+      #{workcontent,jdbcType=LONGVARCHAR}, #{remark,jdbcType=LONGVARCHAR}, #{bak1,jdbcType=LONGVARCHAR}, 
+      #{bak2,jdbcType=LONGVARCHAR}, #{bak3,jdbcType=LONGVARCHAR}, #{bak4,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.hngy.educationaladministration.entity.WorkapprovalWithBLOBs">
+        insert into t_workapproval
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="idType != null">
+                id_type,
+            </if>
+            <if test="idTeacher != null">
+                id_teacher,
+            </if>
+            <if test="worktitle != null">
+                workTitle,
+            </if>
+            <if test="beginDate != null">
+                begin_date,
+            </if>
+            <if test="endDate != null">
+                end_date,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="member != null">
+                member,
+            </if>
+            <if test="appovalflag != null">
+                appovalFlag,
+            </if>
+            <if test="sumbitdate != null">
+                sumbitDate,
+            </if>
+            <if test="appovaldate != null">
+                appovalDate,
+            </if>
+            <if test="idSubadmin != null">
+                id_subAdmin,
+            </if>
+            <if test="workcontent != null">
+                workContent,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="bak1 != null">
+                bak1,
+            </if>
+            <if test="bak2 != null">
+                bak2,
+            </if>
+            <if test="bak3 != null">
+                bak3,
+            </if>
+            <if test="bak4 != null">
+                bak4,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="idType != null">
+                #{idType,jdbcType=BIGINT},
+            </if>
+            <if test="idTeacher != null">
+                #{idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="worktitle != null">
+                #{worktitle,jdbcType=VARCHAR},
+            </if>
+            <if test="beginDate != null">
+                #{beginDate,jdbcType=DATE},
+            </if>
+            <if test="endDate != null">
+                #{endDate,jdbcType=DATE},
+            </if>
+            <if test="location != null">
+                #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="member != null">
+                #{member,jdbcType=VARCHAR},
+            </if>
+            <if test="appovalflag != null">
+                #{appovalflag,jdbcType=INTEGER},
+            </if>
+            <if test="sumbitdate != null">
+                #{sumbitdate,jdbcType=DATE},
+            </if>
+            <if test="appovaldate != null">
+                #{appovaldate,jdbcType=DATE},
+            </if>
+            <if test="idSubadmin != null">
+                #{idSubadmin,jdbcType=BIGINT},
+            </if>
+            <if test="workcontent != null">
+                #{workcontent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak1 != null">
+                #{bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak2 != null">
+                #{bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak3 != null">
+                #{bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bak4 != null">
+                #{bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.hngy.educationaladministration.entity.WorkapprovalExample"
+            resultType="java.lang.Long">
+        select count(*) from t_workapproval
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_workapproval
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.idType != null">
+                id_type = #{record.idType,jdbcType=BIGINT},
+            </if>
+            <if test="record.idTeacher != null">
+                id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="record.worktitle != null">
+                workTitle = #{record.worktitle,jdbcType=VARCHAR},
+            </if>
+            <if test="record.beginDate != null">
+                begin_date = #{record.beginDate,jdbcType=DATE},
+            </if>
+            <if test="record.endDate != null">
+                end_date = #{record.endDate,jdbcType=DATE},
+            </if>
+            <if test="record.location != null">
+                location = #{record.location,jdbcType=VARCHAR},
+            </if>
+            <if test="record.member != null">
+                member = #{record.member,jdbcType=VARCHAR},
+            </if>
+            <if test="record.appovalflag != null">
+                appovalFlag = #{record.appovalflag,jdbcType=INTEGER},
+            </if>
+            <if test="record.sumbitdate != null">
+                sumbitDate = #{record.sumbitdate,jdbcType=DATE},
+            </if>
+            <if test="record.appovaldate != null">
+                appovalDate = #{record.appovaldate,jdbcType=DATE},
+            </if>
+            <if test="record.idSubadmin != null">
+                id_subAdmin = #{record.idSubadmin,jdbcType=BIGINT},
+            </if>
+            <if test="record.workcontent != null">
+                workContent = #{record.workcontent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak1 != null">
+                bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak2 != null">
+                bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak3 != null">
+                bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="record.bak4 != null">
+                bak4 = #{record.bak4,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExampleWithBLOBs" parameterType="map">
+        update t_workapproval
+        set id = #{record.id,jdbcType=BIGINT},
+        id_type = #{record.idType,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        workTitle = #{record.worktitle,jdbcType=VARCHAR},
+        begin_date = #{record.beginDate,jdbcType=DATE},
+        end_date = #{record.endDate,jdbcType=DATE},
+        location = #{record.location,jdbcType=VARCHAR},
+        member = #{record.member,jdbcType=VARCHAR},
+        appovalFlag = #{record.appovalflag,jdbcType=INTEGER},
+        sumbitDate = #{record.sumbitdate,jdbcType=DATE},
+        appovalDate = #{record.appovaldate,jdbcType=DATE},
+        id_subAdmin = #{record.idSubadmin,jdbcType=BIGINT},
+        workContent = #{record.workcontent,jdbcType=LONGVARCHAR},
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+        bak1 = #{record.bak1,jdbcType=LONGVARCHAR},
+        bak2 = #{record.bak2,jdbcType=LONGVARCHAR},
+        bak3 = #{record.bak3,jdbcType=LONGVARCHAR},
+        bak4 = #{record.bak4,jdbcType=LONGVARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_workapproval
+        set id = #{record.id,jdbcType=BIGINT},
+        id_type = #{record.idType,jdbcType=BIGINT},
+        id_teacher = #{record.idTeacher,jdbcType=BIGINT},
+        workTitle = #{record.worktitle,jdbcType=VARCHAR},
+        begin_date = #{record.beginDate,jdbcType=DATE},
+        end_date = #{record.endDate,jdbcType=DATE},
+        location = #{record.location,jdbcType=VARCHAR},
+        member = #{record.member,jdbcType=VARCHAR},
+        appovalFlag = #{record.appovalflag,jdbcType=INTEGER},
+        sumbitDate = #{record.sumbitdate,jdbcType=DATE},
+        appovalDate = #{record.appovaldate,jdbcType=DATE},
+        id_subAdmin = #{record.idSubadmin,jdbcType=BIGINT}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+</mapper>

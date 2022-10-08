@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>教务综合管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/demo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/ready.min.css}">
+    <script type="text/javascript" th:src="@{/js/Vue.js}"></script>
+    <!-- 引入组件库 -->
+    <script type="text/javascript" th:src="@{/js/element-ui.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" th:href="@{/css/element-ui.css}" />
+
+    <!--    easyTable-->
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/vue-easytable/umd/css/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/vue-easytable/umd/js/index.js"></script>
+
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .mychild>input {
+            margin: 5px;
+        }
+
+        input,
+        textarea {
+            border: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(210, 205, 212, 0.45);
+            resize: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <div v-if="!ifShow">
+            <div align="center">
+                <h3>教师学期业务情况登记表</h3>
+            </div>
+            <div align="center">
+                部门 信息工程学院 教研室 软件教研室
+                <input @change="update" type="number" v-model="copyDTO.year" style="width: auto">
+                年
+                <select @change="update" v-model="copyDTO.trem">
+                    <option>上</option>
+                    <option>下</option>
+                </select>
+                学期
+            </div>
+            <table id="table" style="table-layout:fixed; overflow:hidden;width: 90%;text-align: center" border="1"
+                bgcolor="#fff" cellspacing="0" align="center">
+                <tr>
+                    <td>
+                        <b>姓名</b>
+                    </td>
+                    <td>
+                        {{teacher.name}}
+                    </td>
+                    <td>
+                        <b>性别</b>
+                    </td>
+                    <td colspan="2">
+                        {{teacher.gender}}
+                    </td>
+                    <td>
+                        <b>职称</b>
+                    </td>
+                    <td>
+                        {{teacher.duty}}
+                    </td>
+                    <td>
+                        <b>职务</b>
+                    </td>
+                    <td colspan="2">
+                        {{teacher.administrativeDuty}}
+                    </td>
+                    <td>
+                        <b>出生年月</b>
+                    </td>
+                    <td colspan="2">
+                        <input v-model="businessDTO.dateOfBirth" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td :rowspan="businessDTO.completeWorkload.length+3">
+                        <b>
+                            完<br>
+                            成<br>
+                            教<br>
+                            学<br>
+                            工<br>
+                            作<br>
+                            量<br>
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>任教课程名称</b>
+                    </td>
+                    <td colspan="3">
+                        <b>班级</b>
+                    </td>
+                    <td>
+                        <b>理论课时</b>
+                    </td>
+                    <td>
+                        <b>指导实验</b>
+                    </td>
+                    <td>
+                        <b>指导设计</b>
+                    </td>
+                    <td>
+                        <b>指导实习</b>
+                    </td>
+                    <td>
+                        <b>指导综合实验</b>
+                    </td>
+                    <td colspan="2">
+                        <b>总课时</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.completeWorkload" :key="index">
+                    <td colspan="2">
+                        <input v-model="businessDTO.completeWorkload[index].courseName" />
+                    </td>
+                    <td colspan="3">
+                        <input v-model="businessDTO.completeWorkload[index].classes" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.completeWorkload[index].theoryClass" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.completeWorkload[index].guidingExperiment" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.completeWorkload[index].guidingDesign" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.completeWorkload[index].guidingInternship" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.completeWorkload[index].guideComprehensiveExperiment" />
+                    </td>
+                    <td colspan="2">
+                        <input v-model="businessDTO.completeWorkload[index].totalClass" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="12"> 
+                        <button @click="add1">添加</button>
+                        <button @click="del1">删除</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>工作量合计</b>
+                    </td>
+                    <td colspan="8">
+                        <input v-model="businessDTO.totalWorkload" />
+                    </td>
+
+                </tr>
+
+                <!--            学术成果-->
+                <tr>
+                    <td :rowspan="
+                    businessDTO.academicAchievements.textBook.length
+                    +businessDTO.academicAchievements.paper.length
+                    +businessDTO.academicAchievements.projectOrTopics.length
+                    +6
+                    "
+                    >
+                        <b>学<br>术<br>成<br>果</b>
+                    </td>
+                    <td colspan="2">
+                        <b>编写教材名称</b>
+                    </td>
+                    <td colspan="4">
+                        <b>出版单位及时间</b>
+                    </td>
+                    <td colspan="1">
+                        <b>主编（审）</b>
+                    </td>
+                    <td colspan="1">
+                        <b>惨编（审）</b>
+                    </td>
+                    <td colspan="1">
+                        <b>规划教材</b>
+                    </td>
+                    <td colspan="1">
+                        <b>校本教材</b>
+                    </td>
+                    <td colspan="2">
+                        <b>其它</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.textBook" :key="index+100">
+                    <td colspan="2">
+                        <input v-model="businessDTO.academicAchievements.textBook[index].textbookName" />
+                    </td>
+                    <td colspan="4">
+                        <input
+                            v-model="businessDTO.academicAchievements.textBook[index].publishingUnitAndTime" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.academicAchievements.textBook[index].chiefEditor" />
+                    </td>
+                    <td>
+                        <input v-model="businessDTO.academicAchievements.textBook[index].jointlyEdited" />
+                    </td>
+                    <td>
+                        <input
+                            v-model="businessDTO.academicAchievements.textBook[index].planningTextbook" />
+                    </td>
+                    <td>
+                        <input
+                            v-model="businessDTO.academicAchievements.textBook[index].schoolBasedTextbook" />
+                    </td>
+                    <td colspan="2">
+                        <input v-model="businessDTO.academicAchievements.textBook[index].other" />
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td colspan="12">
+                        <button @click="add2">添加</button>
+                        <button @click="del2">删除</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="3">
+                        <b>论文篇名</b>
+                    </td>
+                    <td colspan="6">
+                        <b>发表（获奖）情况</b>
+                    </td>
+                    <td colspan="1">
+                        <b>级别</b>
+                    </td>
+                    <td colspan="2">
+                        <b>本人排名</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.paper" :key="index+200">
+                    <td colspan="3">
+                        <textarea v-model="businessDTO.academicAchievements.paper[index].paperTitle"></textarea>
+                    </td>
+                    <td colspan="6">
+                        <textarea
+                            v-model="businessDTO.academicAchievements.paper[index].publishingSituation"></textarea>
+                    </td>
+                    <td colspan="1">
+                        <textarea
+                           v-model="businessDTO.academicAchievements.paper[index].level"></textarea>
+                    </td>
+                    <td colspan="2">
+                        <textarea
+                            v-model="businessDTO.academicAchievements.paper[index].ranking"></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="12">
+                        <button @click="add3">添加</button>
+                        <button @click="del3">删除</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="3">
+                        <b>
+                            主持或参加课题/项目
+                            名称
+                        </b>
+                    </td>
+                    <td colspan="6">
+                        <b>批准（合作）单位</b>
+                    </td>
+                    <td colspan="1">
+                        <b>类别</b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            本人
+                            角色
+                        </b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.projectOrTopics" :key="index+300">
+                    <td colspan="3">
+                        <textarea v-model="businessDTO.academicAchievements.projectOrTopics[index].hostSubject"></textarea>
+                    </td>
+                    <td colspan="6">
+                        <textarea
+                            v-model="businessDTO.academicAchievements.projectOrTopics[index].cooperationUnit"></textarea>
+                    </td>
+                    <td colspan="1">
+                        <textarea
+                            v-model="businessDTO.academicAchievements.projectOrTopics[index].category"></textarea>
+                    </td>
+                    <td colspan="2">
+                        <textarea
+                            v-model="businessDTO.academicAchievements.projectOrTopics[index].myRole"></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="12">
+                        <button @click="add4">添加</button>
+                        <button @click="del4">删除</button>
+                    </td>
+                </tr>
+
+                <!--            获奖情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>获奖情况</b>
+                    </td>
+                    <td colspan="9">
+                        <textarea v-model="businessDTO.awards"></textarea>
+                    </td>
+                </tr>
+
+                <!--            参加学术团体情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            参加学术团体情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        <textarea v-model="businessDTO.academicGroup"></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            继续教育情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        <textarea v-model="businessDTO.continuingEducation"></textarea>
+                    </td>
+                </tr>
+
+                <!--            担任其他工作情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            担任其他工作情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        <textarea v-model="businessDTO.otherJobs"></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            病休情况
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <input v-model="businessDTO.sick" />
+                    </td>
+                    <td colspan="4">
+                        <b>
+                            事假情况
+                        </b>
+                    </td>
+                    <td colspan="3">
+                        <input v-model="businessDTO.leave" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="3" rowspan="2">
+                        <b>
+                            教学纪律
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            迟到次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            早退次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            调课次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            缺课次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            违纪扣分
+                        </b>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        <input type="number" v-model="businessDTO.beLate" />
+                    </td>
+                    <td colspan="2">
+                        <input type="number" v-model="businessDTO.leaveEarly" />
+                    </td>
+                    <td colspan="2">
+                        <input type="number" v-model="businessDTO.tuneClass" />
+                    </td>
+                    <td colspan="2">
+                        <input type="number" v-model="businessDTO.missingClass" />
+                    </td>
+                    <td colspan="2">
+                        <input type="number" v-model="businessDTO.disciplinaryPenalty" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td rowspan="3">
+                        <b>
+                            学<br>
+                            期<br>
+                            考<br>
+                            核<br>
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            教<br>
+                            期<br>
+                            室<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -60px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            教<br>
+                            期<br>
+                            室<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -60px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp
+                            （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            学<br>
+                            校<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -40px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp
+                            （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div v-show="ifShow">
+            <div align="center">
+                <h3>教师学期业务情况登记表</h3>
+            </div>
+            <div align="center">
+
+                    部门 &nbsp&nbsp&nbsp {{businessDTO.institute}} &nbsp&nbsp&nbsp 教研室 &nbsp&nbsp&nbsp {{businessDTO.section}} &nbsp&nbsp&nbsp
+                    {{copyDTO.year}}
+                    年
+                    {{copyDTO.trem}}
+                    学期
+
+            </div>
+            <table id="table1" style="table-layout:fixed; overflow:hidden;width: 90%;text-align: center" border="1"
+                   bgcolor="#fff" cellspacing="0" align="center">
+                <tr>
+                    <td>
+                        <b>姓名</b>
+                    </td>
+                    <td>
+                        {{teacher.name}}
+                    </td>
+                    <td>
+                        <b>性别</b>
+                    </td>
+                    <td colspan="2">
+                        {{teacher.gender}}
+                    </td>
+                    <td>
+                        <b>职称</b>
+                    </td>
+                    <td>
+                        {{teacher.duty}}
+                    </td>
+                    <td>
+                        <b>职务</b>
+                    </td>
+                    <td colspan="2">
+                        {{teacher.administrativeDuty}}
+                    </td>
+                    <td>
+                        <b>出生年月</b>
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.dateOfBirth}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td :rowspan="businessDTO.completeWorkload.length+2">
+                        <b>
+                            完<br>
+                            成<br>
+                            教<br>
+                            学<br>
+                            工<br>
+                            作<br>
+                            量<br>
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>任教课程名称</b>
+                    </td>
+                    <td colspan="3">
+                        <b>班级</b>
+                    </td>
+                    <td>
+                        <b>理论课时</b>
+                    </td>
+                    <td>
+                        <b>指导实验</b>
+                    </td>
+                    <td>
+                        <b>指导设计</b>
+                    </td>
+                    <td>
+                        <b>指导实习</b>
+                    </td>
+                    <td>
+                        <b>指导综合实验</b>
+                    </td>
+                    <td colspan="2">
+                        <b>总课时</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.completeWorkload" :key="index">
+                    <td colspan="2">
+                        {{businessDTO.completeWorkload[index].courseName}}
+                    </td>
+                    <td colspan="3">
+                        {{businessDTO.completeWorkload[index].classes}}
+                    </td>
+                    <td>
+                        {{businessDTO.completeWorkload[index].theoryClass}}
+                    </td>
+                    <td>
+                        {{businessDTO.completeWorkload[index].guidingExperiment}}
+                    </td>
+                    <td>
+                        {{businessDTO.completeWorkload[index].guidingDesign}}
+                    </td>
+                    <td>
+                        {{businessDTO.completeWorkload[index].guidingInternship}}
+                    </td>
+                    <td>
+                        {{businessDTO.completeWorkload[index].guideComprehensiveExperiment}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.completeWorkload[index].totalClass}}
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td colspan="4">
+                        <b>工作量合计</b>
+                    </td>
+                    <td colspan="8">
+                        {{businessDTO.totalWorkload}}
+                    </td>
+
+                </tr>
+
+                <!--            学术成果-->
+                <tr>
+                    <td :rowspan="
+                    businessDTO.academicAchievements.textBook.length
+                    +businessDTO.academicAchievements.paper.length
+                    +businessDTO.academicAchievements.projectOrTopics.length
+                    +3
+                    "
+                    >
+                        <b>学<br>术<br>成<br>果</b>
+                    </td>
+                    <td colspan="2">
+                        <b>编写教材名称</b>
+                    </td>
+                    <td colspan="4">
+                        <b>出版单位及时间</b>
+                    </td>
+                    <td colspan="1">
+                        <b>主编（审）</b>
+                    </td>
+                    <td colspan="1">
+                        <b>惨编（审）</b>
+                    </td>
+                    <td colspan="1">
+                        <b>规划教材</b>
+                    </td>
+                    <td colspan="1">
+                        <b>校本教材</b>
+                    </td>
+                    <td colspan="2">
+                        <b>其它</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.textBook" :key="index+100">
+                    <td colspan="2">
+                        {{businessDTO.academicAchievements.textBook[index].textbookName}}
+                    </td>
+                    <td colspan="4">
+                        {{businessDTO.academicAchievements.textBook[index].publishingUnitAndTime}}
+                    </td>
+                    <td>
+                        {{businessDTO.academicAchievements.textBook[index].chiefEditor}}
+                    </td>
+                    <td>
+                        {{businessDTO.academicAchievements.textBook[index].jointlyEdited}}
+                    </td>
+                    <td>
+                        {{businessDTO.academicAchievements.textBook[index].planningTextbook}}
+                    </td>
+                    <td>
+                        {{businessDTO.academicAchievements.textBook[index].schoolBasedTextbook}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.academicAchievements.textBook[index].other}}
+                    </td>
+
+                </tr>
+
+
+
+                <tr>
+                    <td colspan="3">
+                        <b>论文篇名</b>
+                    </td>
+                    <td colspan="6">
+                        <b>发表（获奖）情况</b>
+                    </td>
+                    <td colspan="1">
+                        <b>级别</b>
+                    </td>
+                    <td colspan="2">
+                        <b>本人排名</b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.paper" :key="index+200">
+                    <td colspan="3">
+                        {{businessDTO.academicAchievements.paper[index].paperTitle}}
+                    </td>
+                    <td colspan="6">
+                        {{businessDTO.academicAchievements.paper[index].publishingSituation}}
+                    </td>
+                    <td colspan="1">
+                        {{businessDTO.academicAchievements.paper[index].level}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.academicAchievements.paper[index].ranking}}
+                    </td>
+                </tr>
+
+
+
+                <tr>
+                    <td colspan="3">
+                        <b>
+                            主持或参加课题/项目
+                            名称
+                        </b>
+                    </td>
+                    <td colspan="6">
+                        <b>批准（合作）单位</b>
+                    </td>
+                    <td colspan="1">
+                        <b>类别</b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            本人
+                            角色
+                        </b>
+                    </td>
+                </tr>
+
+                <tr v-for="(i,index) in businessDTO.academicAchievements.projectOrTopics" :key="index+300">
+                    <td colspan="3">
+                        {{businessDTO.academicAchievements.projectOrTopics[index].hostSubject}}
+                    </td>
+                    <td colspan="6">
+                        {{businessDTO.academicAchievements.projectOrTopics[index].cooperationUnit}}
+                    </td>
+                    <td colspan="1">
+                        {{businessDTO.academicAchievements.projectOrTopics[index].category}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.academicAchievements.projectOrTopics[index].myRole}}
+                    </td>
+                </tr>
+
+
+
+                <!--            获奖情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>获奖情况</b>
+                    </td>
+                    <td colspan="9">
+                        <span v-html="businessDTO.awards"></span>
+                    </td>
+                </tr>
+
+                <!--            参加学术团体情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            参加学术团体情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        {{businessDTO.academicGroup}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            继续教育情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        {{businessDTO.continuingEducation}}
+                    </td>
+                </tr>
+
+                <!--            担任其他工作情况-->
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            担任其他工作情况
+                        </b>
+                    </td>
+                    <td colspan="9">
+                        {{businessDTO.otherJobs}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            病休情况
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.sick}}
+                    </td>
+                    <td colspan="4">
+                        <b>
+                            事假情况
+                        </b>
+                    </td>
+                    <td colspan="3">
+                        {{businessDTO.leave}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="3" rowspan="2">
+                        <b>
+                            教学纪律
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            迟到次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            早退次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            调课次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            缺课次数
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            违纪扣分
+                        </b>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        {{businessDTO.beLate}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.leaveEarly}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.tuneClass}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.missingClass}}
+                    </td>
+                    <td colspan="2">
+                        {{businessDTO.disciplinaryPenalty}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td rowspan="3">
+                        <b>
+                            学<br>
+                            期<br>
+                            考<br>
+                            核<br>
+                        </b>
+                    </td>
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            教<br>
+                            期<br>
+                            室<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -60px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            教<br>
+                            期<br>
+                            室<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -60px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp
+                            （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+                        <b>
+                            <br>
+                            学<br>
+                            校<br>
+                            意<br>
+                            见<br>
+                            <br>
+                        </b>
+                    </td>
+                    <td colspan="10">
+                        <br>
+                        <br>
+                        <br>
+                        <div style="text-align: right; margin-bottom: -40px ; margin-right: 50px">
+                            年&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 月&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 日&nbsp&nbsp
+                            （盖章）&nbsp&nbsp&nbsp&nbsp
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div v-show="!ifShow" align="center">
+            <button @click="save">保存</button>
+            <button @click="print">打印</button>
+            <button @click="reset">重置</button>
+        </div>
+    </div>
+
+
+</body>
+
+
+<script type="text/javascript" th:src="@{/webjars/jquery/1.9.1/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Apexchart.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/ready.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/axios.js}"></script>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        data() {
+            return {
+                ifShow: false,
+                teacher: {},
+                businessDTO: {
+                    dateOfBirth:" ",
+                    institute: " ",
+                    section: " ",
+                    year:new Date().getFullYear(),
+                    trem:"上",
+                    completeWorkload: [{
+                        courseName: " ",
+                        classes: " ",
+                        theoryClass: " ",
+                        guidingExperiment: " ",
+                        guidingDesign: " ",
+                        guidingInternship: " ",
+                        guideComprehensiveExperiment: " ",
+                        totalClass: " "
+                    }],
+                    totalWorkload: " ",
+                    academicAchievements: {
+                        textBook: [{
+                            textbookName: " ",
+                            publishingUnitAndTime: " ",
+                            chiefEditor: " ",
+                            jointlyEdited: " ",
+                            planningTextbook: " ",
+                            schoolBasedTextbook: " ",
+                            other: " "
+                        }],
+                        paper:[{
+                            paperTitle:" ",
+                            publishingSituation:" ",
+                            level:" ",
+                            ranking:" "
+                        }],
+                        projectOrTopics:[{
+                            hostSubject:" ",
+                            cooperationUnit:" ",
+                            category:" ",
+                            myRole:" "
+                        }]
+                    },
+
+                    awards:" ",
+                    academicGroup:" ",
+                    continuingEducation:" ",
+                    otherJobs:" ",
+                    sick:" ",
+                    leave:" ",
+                    beLate:0,
+                    leaveEarly:0,
+                    tuneClass:0,
+                    missingClass:0,
+                    disciplinaryPenalty:0,
+                    //下面不要填。。
+                    teachingOpinion:" ",
+                    departmentOpinion:" ",
+                    schoolOpinion:" "
+                },
+                copyDTO:null
+
+            }
+        },
+        methods: {
+            add1(){
+                this.businessDTO.completeWorkload.push({});
+            },
+            add2(){
+                this.businessDTO.academicAchievements.textBook.push({});
+            },
+            add3(){
+                this.businessDTO.academicAchievements.paper.push({});
+            },
+            add4(){
+                this.businessDTO.academicAchievements.projectOrTopics.push({});
+            },
+
+            del1(){
+                this.businessDTO.completeWorkload.pop();
+            },
+            del2(){
+                this.businessDTO.academicAchievements.textBook.pop();
+            },
+            del3(){
+                this.businessDTO.academicAchievements.paper.pop();
+            },
+            del4(){
+                this.businessDTO.academicAchievements.projectOrTopics.pop();
+            },
+
+            save(){
+                axios.post("/teacher/business",
+                    this.businessDTO
+                ).then((data)=>{
+
+                });
+            },
+            reset(){
+                this.businessDTO = JSON.parse(JSON.stringify(this.copyDTO));
+            },
+            print(){
+                this.ifShow = true;
+                //打印前，先保存一下
+                this.save();
+                //换行转换一下 todo 暂时没解决
+                // for (let key in this.businessDTO) {
+                //     console.info("key:",key);
+                //     this.$set(this.businessDTO, key,this.replace(this.businessDTO[key]));
+                // }
+
+                //1 秒 后调用打印
+                setTimeout(
+                    function(){
+                        window.print();
+                    },100);
+            },
+            replace(str){
+
+            },
+            update(){
+                this.$set(this.businessDTO,"year",this.copyDTO.year);
+                this.$set(this.businessDTO,"trem",this.copyDTO.trem);
+
+                this.getBusiness();
+            },
+            getBusiness(){
+                axios.get("/teacher/businessData",
+                    {
+                        params:{
+                            year:this.businessDTO.year,
+                            trem:this.businessDTO.trem
+                        }
+                    }
+                ).then((data)=>{
+
+                    console.log(data);
+
+                    if (data.data.extend.teacher != null)
+                        this.teacher = data.data.extend.teacher;
+                    let _businessDTO = data.data.extend.businessDTO;
+                    //无论有没有值都重置一下
+                    this.businessDTO = JSON.parse(JSON.stringify(this.copyDTO));
+                    // 遍历属性为空不赋值
+                    if (_businessDTO != null) {
+                        for (let key in _businessDTO) {
+                            this.$set(this.businessDTO, key, _businessDTO[key]);
+                        }
+                    }
+
+                });
+            }
+        },
+        created(){
+            let copy1 = JSON.parse(JSON.stringify(this.businessDTO))
+            this.copyDTO = JSON.parse(JSON.stringify(this.businessDTO));
+            this.getBusiness();
+            this.print();
+        },
+        mounted() {
+        }
+    })
+</script>
+
+
+
+</html>
